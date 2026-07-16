@@ -38,15 +38,9 @@ function AdminProfilePage() {
   const handleProfileSubmit = (e) => {
     e.preventDefault();
 
-    if (!profileForm.name.trim()) {
-      alert("성명을 입력해주세요.");
-      return;
-    }
-
     // TODO: 백엔드 API 연동 (프로필 정보 수정 요청)
     console.log("프로필 수정 요청:", { empId, ...profileForm });
 
-    localStorage.setItem("userName", profileForm.name);
     localStorage.setItem("userEmail", profileForm.email);
     localStorage.setItem("userPhone", profileForm.phone);
 
@@ -147,16 +141,10 @@ function AdminProfilePage() {
                 <input type="text" value={empId} disabled />
               </div>
 
-              {/* 성명 */}
+              {/* 성명 (수정 불가 고정) */}
               <div className="form-group">
-                <label>성명</label>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="성명을 입력하세요"
-                  value={profileForm.name}
-                  onChange={handleProfileChange}
-                />
+                <label>성명 (수정 불가)</label>
+                <input type="text" value={profileForm.name} disabled />
               </div>
 
               {/* 이메일 */}
