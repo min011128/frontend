@@ -12,11 +12,16 @@ function MaterialPage() {
   });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // ---- 관리자 상태 (현재는 관리자로 로그인된 상태로 시작) ----
-  const [isAdmin] = useState(true);
+  // ---- 관리자 여부 (실제 로그인된 역할 기준) ----
+  const isAdmin = localStorage.getItem("userRole") === "admin";
 
   // ---- 자재 입고 모달 상태 ----
   const [showInboundModal, setShowInboundModal] = useState(false);
+
+  // ---- 사원용 자재 요청 모달 상태 ----
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [requestForm, setRequestForm] = useState({ code: "", name: "", amount: "", reason: "" });
+  const [isRequestDropdownOpen, setIsRequestDropdownOpen] = useState(false);
 
   // ---- 상단 요약 카드 (금일 입고 / 금일 출고 / 총 재고) ----
   const [todayInbound, setTodayInbound] = useState(500);
@@ -98,6 +103,38 @@ function MaterialPage() {
     }));
   };
 
+  const openRequestModal = () => {
+    setRequestForm({ code: "", name: "", amount: "", reason: "" });
+    setIsRequestDropdownOpen(false);
+    setShowRequestModal(true);
+  };
+
+  const closeRequestModal = () => {
+    setShowRequestModal(false);
+    setIsRequestDropdownOpen(false);
+  };
+
+  const handleRequestCodeChange = (codeValue) => {
+    const matched = materialPresets.find((item) => item.code === codeValue);
+    setRequestForm((prev) => ({
+      ...prev,
+      code: codeValue,
+      name: matched ? matched.name : prev.name,
+    }));
+  };
+
+  const handleRequestSubmit = () => {
+    if (!requestForm.code || !requestForm.amount || requestForm.amount <= 0) {
+      alert("자재와 요청 수량을 확인해주세요.");
+      return;
+    }
+    // TODO: 백엔드 API 연동 (자재 요청 접수)
+    console.log("자재 요청:", requestForm);
+    alert(`📩 ${requestForm.name} ${requestForm.amount}개 요청이 관리자에게 전달되었습니다.`);
+    setRequestForm({ code: "", name: "", amount: "", reason: "" });
+    setShowRequestModal(false);
+  };
+
   // 본문 콘텐츠에만 필요한 CSS 스타일
   const contentStyles = `
     .mesdash .material-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--md); }
@@ -122,6 +159,8 @@ function MaterialPage() {
 
     .mesdash .inbound-trigger-btn { display: inline-flex; align-items: center; gap: var(--xs); padding: var(--sm) var(--md); border: none; border-radius: 6px; font-size: 13px; font-weight: 700; color: #ffffff; background-color: var(--primary); cursor: pointer; transition: opacity 0.2s; white-space: nowrap; }
     .mesdash .inbound-trigger-btn:hover { opacity: 0.9; }
+    .mesdash .request-trigger-btn { display: inline-flex; align-items: center; gap: var(--xs); padding: var(--sm) var(--md); border: none; border-radius: 6px; font-size: 13px; font-weight: 700; color: #ffffff; background-color: var(--tertiary, #16a34a); cursor: pointer; transition: opacity 0.2s; white-space: nowrap; }
+    .mesdash .request-trigger-btn:hover { opacity: 0.9; }
 
     .mesdash .switch-tab { display: flex; background-color: var(--surface-container-low); padding: var(--xs); border-radius: 6px; margin-bottom: var(--md); }
     .mesdash .switch-tab button { flex: 1; border: none; padding: var(--sm) 0; font-size: 13px; font-weight: 700; border-radius: 4px; cursor: pointer; background: transparent; color: var(--on-surface-variant); transition: all 0.2s; }
@@ -160,46 +199,48 @@ function MaterialPage() {
     <>
       <style>{contentStyles}</style>
 
-      <div className="stat-cards-row">
-        <div className="stat-card">
-          <div className="stat-icon icon-in">
-            <span className="material-symbols-outlined">move_to_inbox</span>
+      {isAdmin && (
+        <div className="stat-cards-row">
+          <div className="stat-card">
+            <div className="stat-icon icon-in">
+              <span className="material-symbols-outlined">move_to_inbox</span>
+            </div>
+            <div className="stat-body">
+              <span className="stat-label">금일 입고</span>
+              <span className="stat-value">
+                {todayInbound.toLocaleString()}
+                <span className="stat-unit">건</span>
+              </span>
+            </div>
           </div>
-          <div className="stat-body">
-            <span className="stat-label">금일 입고</span>
-            <span className="stat-value">
-              {todayInbound.toLocaleString()}
-              <span className="stat-unit">건</span>
-            </span>
-          </div>
-        </div>
 
-        <div className="stat-card">
-          <div className="stat-icon icon-out">
-            <span className="material-symbols-outlined">outbox</span>
+          <div className="stat-card">
+            <div className="stat-icon icon-out">
+              <span className="material-symbols-outlined">outbox</span>
+            </div>
+            <div className="stat-body">
+              <span className="stat-label">금일 출고</span>
+              <span className="stat-value">
+                {todayOutbound.toLocaleString()}
+                <span className="stat-unit">건</span>
+              </span>
+            </div>
           </div>
-          <div className="stat-body">
-            <span className="stat-label">금일 출고</span>
-            <span className="stat-value">
-              {todayOutbound.toLocaleString()}
-              <span className="stat-unit">건</span>
-            </span>
-          </div>
-        </div>
 
-        <div className="stat-card">
-          <div className="stat-icon icon-total">
-            <span className="material-symbols-outlined">layers</span>
-          </div>
-          <div className="stat-body">
-            <span className="stat-label">총 재고</span>
-            <span className="stat-value">
-              {totalStock.toLocaleString()}
-              <span className="stat-unit">EA</span>
-            </span>
+          <div className="stat-card">
+            <div className="stat-icon icon-total">
+              <span className="material-symbols-outlined">layers</span>
+            </div>
+            <div className="stat-body">
+              <span className="stat-label">총 재고</span>
+              <span className="stat-value">
+                {totalStock.toLocaleString()}
+                <span className="stat-unit">EA</span>
+              </span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="material-grid">
         {/* 자재 재고 현황표 */}
@@ -207,10 +248,15 @@ function MaterialPage() {
           <div className="card">
             <div className="card-header-row">
               <h3>📦 자재 재고 현황표</h3>
-              {isAdmin && (
+              {isAdmin ? (
                 <button type="button" className="inbound-trigger-btn" onClick={openInboundModal}>
                   <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>add_box</span>
                   <span>자재 입고</span>
+                </button>
+              ) : (
+                <button type="button" className="request-trigger-btn" onClick={openRequestModal}>
+                  <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>send</span>
+                  <span>자재 요청</span>
                 </button>
               )}
             </div>
@@ -349,6 +395,93 @@ function MaterialPage() {
             >
               <span className="material-symbols-outlined">save</span>
               <span>업데이트 저장</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 자재 요청 모달 (사원 전용 버튼으로만 열림) */}
+      {!isAdmin && showRequestModal && (
+        <div className="modal-overlay" onClick={closeRequestModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>자재 요청</h3>
+              <button type="button" className="btn-close" onClick={closeRequestModal}>✕</button>
+            </div>
+
+            <div className="form-group">
+              <label>자재 코드</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="자재코드 입력 (예: MAT-SCREW)"
+                value={requestForm.code}
+                onChange={(e) => handleRequestCodeChange(e.target.value)}
+              />
+              <button
+                type="button"
+                className={`material-symbols-outlined chevron-btn ${isRequestDropdownOpen ? "open" : ""}`}
+                onClick={() => setIsRequestDropdownOpen(!isRequestDropdownOpen)}
+              >
+                expand_more
+              </button>
+              {isRequestDropdownOpen && (
+                <ul className="dropdown-list custom-scrollbar">
+                  {materialPresets.map((item) => (
+                    <li
+                      key={item.code}
+                      className="dropdown-item"
+                      onClick={() => {
+                        setRequestForm({ ...requestForm, code: item.code, name: item.name });
+                        setIsRequestDropdownOpen(false);
+                      }}
+                    >
+                      {item.code} ({item.name})
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label>자재명</label>
+              <input
+                type="text"
+                className="form-input"
+                value={requestForm.name}
+                placeholder="자동 매핑 자재명"
+                readOnly
+              />
+            </div>
+            <div className="form-group">
+              <label>요청 수량 (ea)</label>
+              <input
+                type="number"
+                className="form-input"
+                placeholder="0"
+                value={requestForm.amount}
+                onChange={(e) => setRequestForm({ ...requestForm, amount: e.target.value })}
+              />
+            </div>
+            <div className="form-group">
+              <label>요청 사유</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="사유를 입력하세요 (예: 재고 부족, 파손 등)"
+                value={requestForm.reason}
+                onChange={(e) => setRequestForm({ ...requestForm, reason: e.target.value })}
+              />
+            </div>
+
+            <button
+              type="button"
+              className="submit-btn"
+              style={{ backgroundColor: "var(--tertiary, #16a34a)" }}
+              onClick={handleRequestSubmit}
+            >
+              <span className="material-symbols-outlined">send</span>
+              <span>요청 보내기</span>
             </button>
           </div>
         </div>

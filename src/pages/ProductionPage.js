@@ -345,7 +345,7 @@ function ProductionPage() {
   const [selectedLine, setSelectedLine] = useState("A");
   const [selectedLot, setSelectedLot] = useState(null); 
   const [lotFilter, setLotFilter] = useState("전체"); 
-  const [isAdmin, setIsAdmin] = useState(true); 
+  const isAdmin = localStorage.getItem("userRole") === "admin"; 
   const [showAssignModal, setShowAssignModal] = useState(false); 
   const [assignFilter, setAssignFilter] = useState("unassigned"); 
   const [employees, setEmployees] = useState(initialEmployees); 
