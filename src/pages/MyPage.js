@@ -83,8 +83,9 @@ function AdminProfilePage() {
     .mypage-title-area h2 { margin: 0; font-size: 22px; color: #191c20; font-weight: 800; }
     .mypage-title-area p { margin: 6px 0 0 0; font-size: 13px; color: #45474c; }
     
-    .mypage-content { display: flex; gap: 24px; flex-wrap: wrap; max-width: 600px; }
-    .card { background: #ffffff; border: 1px solid #c5c6cd; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); width: 100%; }
+    .mypage-content { display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: 24px; max-width: 960px; }
+    @media (max-width: 760px) { .mypage-content { grid-template-columns: 1fr; } }
+    .card { background: #ffffff; border: 1px solid #c5c6cd; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
     .card h3 { margin: 0 0 20px 0; font-size: 16px; color: #0566d9; font-weight: 700; padding-bottom: 8px; border-bottom: 2px solid #d8e2ff; }
     
     .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
