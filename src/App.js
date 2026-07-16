@@ -7,7 +7,7 @@ import MaterialPage from "./pages/MaterialPage";
 import LoginPage from "./pages/LoginPage";
 import QualityPage from "./pages/QualityPage";
 import AdminEmployeePage from "./pages/AdminEmployeePage";
-import MyPage from "./pages/MyPage"; 
+import MyPage from "./pages/AdminProfilePage"; 
 import MasterDataPage from "./pages/MasterDataPage";
 import WorkOrderPage from "./pages/WorkOrderPage";
 import EmployeeDashboardPage from "./pages/EmployeeDashboardPage";
