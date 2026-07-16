@@ -18,6 +18,10 @@ function MaterialPage() {
   // ---- 자재 입고 모달 상태 ----
   const [showInboundModal, setShowInboundModal] = useState(false);
 
+  // ---- 상단 요약 카드 (금일 입고 / 금일 출고 / 총 재고) ----
+  const [todayInbound, setTodayInbound] = useState(500);
+  const [todayOutbound, setTodayOutbound] = useState(2350);
+
   const fetchMaterials = async () => {
     try {
       const res = await MesApi.getMaterials();
@@ -42,6 +46,19 @@ function MaterialPage() {
     setIsDropdownOpen(false);
   };
 
+  const fallbackMaterials = [
+    { id: "fallback-1", code: "MAT-SCREW", name: "티타늄 나사", currentStock: 4500 },
+    { id: "fallback-2", code: "MAT-PCB", name: "제어 회로 기판", currentStock: 5 },
+    { id: "fallback-3", code: "MAT-CASE", name: "강화 플라스틱 케이스", currentStock: 850 },
+  ];
+
+  const displayMaterials = materials.length > 0 ? materials : fallbackMaterials;
+
+  const totalStock = displayMaterials.reduce(
+    (sum, m) => sum + (Number(m.currentStock) || 0),
+    0
+  );
+
   const handleInbound = async () => {
     if (!form.code || form.amount <= 0) return alert("입력 값을 확인하세요.");
     try {
@@ -54,6 +71,11 @@ function MaterialPage() {
       });
       alert(`✅ ${form.name} ${form.amount}개 수불 처리 완료`);
       fetchMaterials();
+      if (form.type === "OUT") {
+        setTodayOutbound((prev) => prev + Number(form.amount));
+      } else {
+        setTodayInbound((prev) => prev + Number(form.amount));
+      }
       setForm({ code: "", name: "", amount: "", type: "IN", reason: "" });
       setShowInboundModal(false);
     } catch (e) {
@@ -80,6 +102,18 @@ function MaterialPage() {
   const contentStyles = `
     .mesdash .material-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--md); }
     .mesdash .grid-full { grid-column: span 12 / span 12; display: flex; flex-direction: column; gap: var(--md); }
+
+    .mesdash .stat-cards-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--md); margin-bottom: var(--md); }
+    .mesdash .stat-card { display: flex; align-items: center; gap: var(--md); background-color: var(--surface-container-lowest); border: 1px solid var(--outline-variant); border-radius: 10px; padding: var(--md); box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+    .mesdash .stat-icon { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #ffffff; }
+    .mesdash .stat-icon .material-symbols-outlined { font-size: 20px; }
+    .mesdash .stat-icon.icon-in { background-color: var(--tertiary, #16a34a); }
+    .mesdash .stat-icon.icon-out { background-color: var(--error, #dc2626); }
+    .mesdash .stat-icon.icon-total { background-color: var(--primary, #02639a); }
+    .mesdash .stat-body { display: flex; flex-direction: column; gap: 2px; }
+    .mesdash .stat-label { font-size: 12px; font-weight: 600; color: var(--on-surface-variant); }
+    .mesdash .stat-value { font-size: 20px; font-weight: 800; color: var(--on-surface); }
+    .mesdash .stat-value .stat-unit { font-size: 12px; font-weight: 700; color: var(--on-surface-variant); margin-left: 3px; }
 
     .mesdash .card { background-color: var(--surface-container-lowest); border: 1px solid var(--outline-variant); border-radius: 8px; padding: var(--md); box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
     .mesdash .card-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--md); }
@@ -125,6 +159,48 @@ function MaterialPage() {
   return (
     <>
       <style>{contentStyles}</style>
+
+      <div className="stat-cards-row">
+        <div className="stat-card">
+          <div className="stat-icon icon-in">
+            <span className="material-symbols-outlined">move_to_inbox</span>
+          </div>
+          <div className="stat-body">
+            <span className="stat-label">금일 입고</span>
+            <span className="stat-value">
+              {todayInbound.toLocaleString()}
+              <span className="stat-unit">건</span>
+            </span>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-icon icon-out">
+            <span className="material-symbols-outlined">outbox</span>
+          </div>
+          <div className="stat-body">
+            <span className="stat-label">금일 출고</span>
+            <span className="stat-value">
+              {todayOutbound.toLocaleString()}
+              <span className="stat-unit">건</span>
+            </span>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-icon icon-total">
+            <span className="material-symbols-outlined">layers</span>
+          </div>
+          <div className="stat-body">
+            <span className="stat-label">총 재고</span>
+            <span className="stat-value">
+              {totalStock.toLocaleString()}
+              <span className="stat-unit">EA</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
       <div className="material-grid">
         {/* 자재 재고 현황표 */}
         <div className="grid-full">
@@ -147,7 +223,7 @@ function MaterialPage() {
                 </tr>
               </thead>
               <tbody>
-                {materials.map((m) => (
+                {displayMaterials.map((m) => (
                   <tr key={m.id}>
                     <td className="font-code text-primary">{m.code}</td>
                     <td style={{ fontWeight: "600" }}>{m.name}</td>
@@ -161,55 +237,10 @@ function MaterialPage() {
                             : "var(--tertiary)",
                       }}
                     >
-                      {m.currentStock} ea
+                      {Number(m.currentStock).toLocaleString()} ea
                     </td>
                   </tr>
                 ))}
-                {materials.length === 0 && (
-                  <>
-                    <tr>
-                      <td className="font-code text-primary">MAT-SCREW</td>
-                      <td style={{ fontWeight: "600" }}>티타늄 나사</td>
-                      <td
-                        style={{
-                          textAlign: "right",
-                          fontWeight: "bold",
-                          color: "var(--tertiary)",
-                        }}
-                      >
-                        4,500 ea
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="font-code text-primary">MAT-PCB</td>
-                      <td style={{ fontWeight: "600" }}>제어 회로 기판</td>
-                      <td
-                        style={{
-                          textAlign: "right",
-                          fontWeight: "bold",
-                          color: "var(--error)",
-                        }}
-                      >
-                        5 ea
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="font-code text-primary">MAT-CASE</td>
-                      <td style={{ fontWeight: "600" }}>
-                        강화 플라스틱 케이스
-                      </td>
-                      <td
-                        style={{
-                          textAlign: "right",
-                          fontWeight: "bold",
-                          color: "var(--tertiary)",
-                        }}
-                      >
-                        850 ea
-                      </td>
-                    </tr>
-                  </>
-                )}
               </tbody>
             </table>
           </div>
