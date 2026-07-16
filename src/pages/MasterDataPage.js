@@ -94,7 +94,7 @@ const emptyProductForm = {
 const emptyBomForm = { partId: "", name: "", qty: "", unit: "PC", supplier: "", status: "재고충분" };
 
 // -------------------------------------------------------------
-// [CSS 스타일 정의] - 프로젝트 공통 톤(#02639a 포인트 컬러)에 맞춤
+// [CSS 스타일 정의] - 프로젝트 공통 톤(#0566d9 포인트 컬러)에 맞춤
 // -------------------------------------------------------------
 const styles = `
   .master-container { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #334155; display: flex; gap: 20px; align-items: flex-start; }
@@ -102,18 +102,18 @@ const styles = `
   .list-panel { width: 320px; flex-shrink: 0; }
   .list-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
   .list-panel-header h3 { margin: 0; font-size: 18px; font-weight: 800; color: #0f172a; }
-  .btn-primary { background: #02639a; color: #ffffff; border: none; padding: 9px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
-  .btn-primary:hover { background: #0284c7; }
+  .btn-primary { background: #0566d9; color: #ffffff; border: none; padding: 9px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+  .btn-primary:hover { opacity: 0.85; }
 
   .search-box-wrap { position: relative; margin-bottom: 14px; }
   .search-box-wrap .icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 13px; }
   .search-box-full { width: 100%; box-sizing: border-box; border: 1px solid #cbd5e1; padding: 10px 12px 10px 32px; border-radius: 8px; font-size: 13px; outline: none; }
-  .search-box-full:focus { border-color: #02639a; }
+  .search-box-full:focus { border-color: #0566d9; }
 
   .product-list { display: flex; flex-direction: column; gap: 10px; }
   .product-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; cursor: pointer; transition: all 0.15s; }
   .product-card:hover { border-color: #93c5fd; }
-  .product-card.active { border-color: #02639a; background: #f0f9ff; box-shadow: 0 0 0 1px #02639a; }
+  .product-card.active { border-color: #0566d9; background: #f0f9ff; box-shadow: 0 0 0 1px #0566d9; }
   .product-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
   .product-card-top .p-name { font-size: 14px; font-weight: 800; color: #0f172a; }
   .product-card .p-sku { font-size: 12px; color: #64748b; font-family: monospace; margin-bottom: 8px; }
@@ -128,7 +128,7 @@ const styles = `
   .empty-detail { background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 60px; text-align: center; color: #94a3b8; font-size: 13px; }
 
   .breadcrumb { font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 10px; }
-  .breadcrumb .current { color: #02639a; font-weight: 700; }
+  .breadcrumb .current { color: #0566d9; font-weight: 700; }
 
   .detail-title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
   .detail-title-row h2 { margin: 0 0 6px 0; font-size: 24px; font-weight: 800; color: #0f172a; }
@@ -136,8 +136,8 @@ const styles = `
   .detail-actions { display: flex; gap: 10px; flex-shrink: 0; }
   .btn-outline { background: #ffffff; border: 1px solid #cbd5e1; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; color: #475569; cursor: pointer; white-space: nowrap; }
   .btn-outline:hover { background: #f1f5f9; }
-  .btn-edit { background: #02639a; color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
-  .btn-edit:hover { background: #0284c7; }
+  .btn-edit { background: #0566d9; color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  .btn-edit:hover { opacity: 0.85; }
 
   .spec-row { display: grid; grid-template-columns: 2.2fr 1fr; gap: 20px; margin-bottom: 20px; align-items: stretch; }
   @media (max-width: 900px) { .spec-row { grid-template-columns: 1fr; } }
@@ -147,7 +147,7 @@ const styles = `
 
   .spec-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 22px; column-gap: 16px; }
   .spec-item .s-label { font-size: 12px; color: #64748b; font-weight: 600; margin-bottom: 6px; }
-  .spec-item .s-value { font-size: 20px; font-weight: 800; color: #02639a; }
+  .spec-item .s-value { font-size: 20px; font-weight: 800; color: #0566d9; }
 
   .visual-card { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
   .visual-thumb { width: 100%; aspect-ratio: 1.3 / 1; background: #f0f9ff; border: 1px solid #dbeafe; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 46px; margin-bottom: 12px; }
@@ -157,21 +157,21 @@ const styles = `
   .bom-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
   .bom-header-right { display: flex; align-items: center; gap: 14px; }
   .bom-count { font-size: 12px; color: #64748b; font-weight: 600; }
-  .link-btn { background: none; border: none; color: #02639a; font-size: 12px; font-weight: 700; cursor: pointer; padding: 0; }
+  .link-btn { background: none; border: none; color: #0566d9; font-size: 12px; font-weight: 700; cursor: pointer; padding: 0; }
   .link-btn:hover { text-decoration: underline; }
 
   .bom-table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 8px; }
   .bom-table th { font-size: 12px; color: #64748b; font-weight: 700; padding: 12px 10px; border-bottom: 1px solid #e2e8f0; }
   .bom-table td { padding: 16px 10px; border-bottom: 1px solid #f1f5f9; font-size: 13px; vertical-align: top; }
   .bom-table tbody tr:hover td { background: #f8fafc; }
-  .part-id { color: #02639a; font-weight: 700; font-family: monospace; font-size: 12.5px; }
+  .part-id { color: #0566d9; font-weight: 700; font-family: monospace; font-size: 12.5px; }
   .part-actions { display: flex; align-items: center; gap: 8px; }
   .btn-del-part { background: none; border: none; color: #cbd5e1; font-size: 15px; cursor: pointer; padding: 0 2px; }
   .btn-del-part:hover { color: #dc2626; }
 
   .bom-footer { display: flex; justify-content: flex-end; padding-top: 14px; }
   .btn-add-part { background: none; border: 1px dashed #94a3b8; color: #475569; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; }
-  .btn-add-part:hover { border-color: #02639a; color: #02639a; }
+  .btn-add-part:hover { border-color: #0566d9; color: #0566d9; }
 
   .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
   .modal-content { background: #ffffff; width: 460px; max-width: 100%; border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-height: 88vh; overflow-y: auto; }
@@ -184,12 +184,12 @@ const styles = `
   .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
   .form-group label { font-size: 12px; font-weight: 700; color: #334155; }
   .form-group input, .form-group select, .form-group textarea { padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 13px; background: #ffffff; font-family: inherit; }
-  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #02639a; }
-  .form-section-label { font-size: 12px; font-weight: 800; color: #02639a; margin: 4px 0 10px 0; text-transform: uppercase; letter-spacing: 0.02em; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #0566d9; }
+  .form-section-label { font-size: 12px; font-weight: 800; color: #0566d9; margin: 4px 0 10px 0; text-transform: uppercase; letter-spacing: 0.02em; }
 
   .modal-footer { display: flex; gap: 10px; margin-top: 6px; }
-  .submit-btn { flex: 1; padding: 12px; background: #02639a; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 13px; }
-  .submit-btn:hover { background: #0284c7; }
+  .submit-btn { flex: 1; padding: 12px; background: #0566d9; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 13px; }
+  .submit-btn:hover { opacity: 0.85; }
   .danger-btn { padding: 12px 16px; background: #fee2e2; color: #dc2626; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px; }
   .danger-btn:hover { background: #fca5a5; }
 `;

@@ -21,7 +21,7 @@ const STATUS_CLASS = { "재직중": "status-active", "휴직": "status-leave", "
 const emptyForm = { id: "", name: "", email: "", dept: DEPT_OPTIONS[0], phone: "", status: "재직중", line: LINE_OPTIONS[0], role: "user" };
 
 // -------------------------------------------------------------
-// [CSS 스타일 정의] - 프로젝트 공통 톤(#02639a 포인트 컬러)에 맞춤
+// [CSS 스타일 정의] - 프로젝트 공통 톤(#0566d9 포인트 컬러)에 맞춤
 // -------------------------------------------------------------
 const styles = `
   .admin-container { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #334155; padding: 8px; }
@@ -32,11 +32,11 @@ const styles = `
 
   .admin-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .search-box { border: 1px solid #cbd5e1; padding: 9px 14px; border-radius: 8px; font-size: 13px; width: 240px; outline: none; transition: border-color 0.2s; }
-  .search-box:focus { border-color: #02639a; }
+  .search-box:focus { border-color: #0566d9; }
   .btn-refresh { background: #ffffff; border: 1px solid #cbd5e1; padding: 9px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; color: #475569; cursor: pointer; transition: 0.2s; }
   .btn-refresh:hover { background-color: #f1f5f9; }
-  .btn-primary { background: #02639a; color: #ffffff; border: none; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; white-space: nowrap; }
-  .btn-primary:hover { background: #0284c7; }
+  .btn-primary { background: #0566d9; color: #ffffff; border: none; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+  .btn-primary:hover { opacity: 0.85; }
   .btn-bulk-delete { background: #fee2e2; color: #dc2626; border: none; padding: 9px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
   .btn-bulk-delete:hover { background: #fca5a5; }
 
@@ -53,7 +53,7 @@ const styles = `
   .emp-name { font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 6px; }
   .emp-email { font-size: 12px; color: #94a3b8; margin-top: 2px; }
 
-  .badge-admin { background: #dbeafe; color: #02639a; padding: 2px 7px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+  .badge-admin { background: #dbeafe; color: #0566d9; padding: 2px 7px; border-radius: 6px; font-size: 10px; font-weight: 700; }
 
   .status-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px; display: inline-block; }
   .status-active { background: #dcfce7; color: #16803d; }
@@ -79,10 +79,10 @@ const styles = `
   .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
   .form-group label { font-size: 12px; font-weight: 700; color: #334155; }
   .form-group input, .form-group select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 13px; background: #ffffff; }
-  .form-group input:focus, .form-group select:focus { border-color: #02639a; }
+  .form-group input:focus, .form-group select:focus { border-color: #0566d9; }
 
-  .submit-btn { width: 100%; padding: 12px; background: #02639a; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 13px; margin-top: 6px; }
-  .submit-btn:hover { background: #0284c7; }
+  .submit-btn { width: 100%; padding: 12px; background: #0566d9; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 13px; margin-top: 6px; }
+  .submit-btn:hover { opacity: 0.85; }
 `;
 
 function AdminEmployeePage() {

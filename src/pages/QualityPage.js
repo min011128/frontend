@@ -4,91 +4,107 @@ function QualityPage() {
   const [searchSerial, setSearchInput] = useState("");
 
   const styles = `
-    .mesdash .quality-header-flex { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--xl); }
-    .mesdash .quality-header-flex h2 { margin: 0; font-size: 32px; font-weight: 600; line-height: 40px; color: var(--on-surface); }
-    .mesdash .quality-header-flex p { margin: 4px 0 0 0; font-size: 16px; color: var(--on-surface-variant); }
-    
-    .mesdash .btn-group { display: flex; gap: var(--sm); }
-    .mesdash .btn-secondary-outline { padding: var(--sm) var(--md); border: 1px solid var(--outline-variant); border-radius: 4px; background: var(--surface-container-lowest); font-size: 14px; font-weight: 700; color: var(--on-surface); cursor: pointer; display: flex; align-items: center; gap: var(--xs); }
-    .mesdash .btn-secondary-outline:hover { background-color: var(--surface-container-low); }
-    .mesdash .btn-primary-filled { padding: var(--sm) var(--md); border: none; border-radius: 4px; background-color: var(--primary); font-size: 14px; font-weight: 700; color: #ffffff; cursor: pointer; display: flex; align-items: center; gap: var(--xs); }
-    .mesdash .btn-primary-filled:hover { opacity: 0.9; }
+    .mesdash { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #334155; }
 
-    .mesdash .bento-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--md); margin-bottom: var(--md); }
-    .mesdash .bento-left { grid-column: span 3 / span 3; display: flex; flex-direction: column; gap: var(--md); }
+    .mesdash .quality-header-flex { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+    .mesdash .quality-header-flex h2 { margin: 0; font-size: 22px; font-weight: 800; line-height: 1.3; color: #0f172a; }
+    .mesdash .quality-header-flex p { margin: 6px 0 0 0; font-size: 13px; color: #64748b; }
+
+    .mesdash .btn-group { display: flex; gap: 8px; }
+    .mesdash .btn-secondary-outline { padding: 9px 14px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; font-size: 13px; font-weight: 700; color: #475569; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .mesdash .btn-secondary-outline:hover { background-color: #f1f5f9; }
+    .mesdash .btn-primary-filled { padding: 9px 14px; border: none; border-radius: 8px; background-color: #0566d9; font-size: 13px; font-weight: 700; color: #ffffff; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .mesdash .btn-primary-filled:hover { opacity: 0.85; }
+    .mesdash .material-symbols-outlined { font-size: 18px; }
+
+    .mesdash .bento-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; }
+    .mesdash .bento-left { grid-column: span 3 / span 3; display: flex; flex-direction: column; gap: 16px; }
     .mesdash .bento-center { grid-column: span 6 / span 6; }
     .mesdash .bento-right { grid-column: span 3 / span 3; }
+    @media (max-width: 1100px) {
+      .mesdash .bento-left, .mesdash .bento-center, .mesdash .bento-right { grid-column: span 12 / span 12; }
+    }
 
-    .mesdash .card { background-color: var(--surface-container-lowest); border: 1px solid var(--outline-variant); border-radius: 8px; padding: var(--md); box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); display: flex; flex-direction: column; }
-    .mesdash .card h3 { margin: 0; font-size: 20px; font-weight: 600; line-height: 28px; color: var(--on-surface); }
-    
+    .mesdash .card { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); display: flex; flex-direction: column; }
+    .mesdash .card h3 { margin: 0; font-size: 15px; font-weight: 800; line-height: 1.3; color: #0f172a; }
+
     /* 종합 수율 프로그레스 */
-    .mesdash .yield-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--sm); font-size: 12px; font-weight: 700; color: var(--on-surface-variant); }
-    .mesdash .yield-badge { padding: var(--xs) 6px; background-color: #d1e7dd; color: var(--tertiary); font-size: 11px; border-radius: 4px; }
-    .mesdash .yield-value { display: flex; align-items: baseline; gap: var(--xs); margin-bottom: var(--sm); }
-    .mesdash .yield-value .main-num { font-size: 32px; font-weight: 700; color: var(--primary); }
-    .mesdash .line-track { height: 6px; width: 100%; background-color: var(--surface-container); border-radius: 9999px; overflow: hidden; }
-    .mesdash .line-fill { height: 100%; background-color: var(--primary); border-radius: 9999px; }
+    .mesdash .yield-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; font-weight: 700; color: #64748b; }
+    .mesdash .yield-badge { padding: 3px 7px; background-color: #dcfce7; color: #16803d; font-size: 11px; border-radius: 6px; font-weight: 700; }
+    .mesdash .yield-value { display: flex; align-items: baseline; gap: 4px; margin-bottom: 10px; }
+    .mesdash .yield-value .main-num { font-size: 28px; font-weight: 800; color: #0566d9; }
+    .mesdash .line-track { height: 6px; width: 100%; background-color: #f1f5f9; border-radius: 9999px; overflow: hidden; }
+    .mesdash .line-fill { height: 100%; background-color: #0566d9; border-radius: 9999px; }
 
     /* 수량 스킨 */
-    .mesdash .qty-flex { display: flex; justify-content: space-between; align-items: center; margin-top: var(--xs); }
-    .mesdash .qty-flex .total-num { font-size: 24px; font-weight: 700; color: var(--on-surface); }
-    .mesdash .qty-sub { display: flex; flex-direction: column; align-items: flex-end; font-size: 12px; font-weight: 700; }
+    .mesdash .qty-flex { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+    .mesdash .qty-flex .total-num { font-size: 22px; font-weight: 800; color: #0f172a; }
+    .mesdash .qty-sub { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-size: 12px; font-weight: 700; }
+
+    /* 텍스트 유틸리티 */
+    .mesdash .text-tertiary { color: #16803d; }
+    .mesdash .text-error { color: #dc2626; }
+    .mesdash .text-primary { color: #0566d9; }
+    .mesdash .text-muted { color: #94a3b8; }
 
     /* 서클 그래프 */
-    .mesdash .circle-flex { display: flex; align-items: center; gap: var(--md); margin-top: var(--xs); }
-    .mesdash .circle-graph { position: relative; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
+    .mesdash .circle-flex { display: flex; align-items: center; gap: 14px; margin-top: 6px; }
+    .mesdash .circle-graph { position: relative; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .mesdash .circle-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
     .mesdash .circle-svg circle { fill: transparent; stroke-width: 4; }
-    .mesdash .circle-svg .bg { stroke: var(--surface-container); }
-    .mesdash .circle-svg .val { stroke: var(--primary); }
-    .mesdash .circle-inner-txt { position: absolute; font-size: 11px; font-weight: 700; }
+    .mesdash .circle-svg .bg { stroke: #f1f5f9; }
+    .mesdash .circle-svg .val { stroke: #0566d9; stroke-linecap: round; }
+    .mesdash .circle-inner-txt { position: absolute; font-size: 11px; font-weight: 800; color: #0f172a; }
 
     /* 공정별 수율 차트 */
-    .mesdash .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--lg); }
-    .mesdash .chart-select { border: none; font-size: 12px; font-weight: 700; color: var(--on-surface-variant); background: transparent; cursor: pointer; outline: none; }
-    .mesdash .bar-container { display: flex; align-items: flex-end; justify-content: space-between; height: 192px; padding: 0 var(--md); }
-    .mesdash .bar-column { flex: 1; display: flex; flex-direction: column; align-items: center; gap: var(--sm); }
-    .mesdash .bar-track { width: 100%; max-width: 32px; background-color: var(--primary-container); border-top-left-radius: 4px; border-top-right-radius: 4px; position: relative; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
-    .mesdash .bar-fill { width: 100%; background-color: var(--primary); border-top-left-radius: 4px; border-top-right-radius: 4px; transition: height 0.3s; }
-    .mesdash .bar-label { font-size: 11px; font-weight: 700; color: var(--on-surface-variant); white-space: nowrap; }
-    .mesdash .bar-pct { font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--primary); font-weight: 700; }
+    .mesdash .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .mesdash .chart-select { border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 8px; font-size: 12px; font-weight: 700; color: #64748b; background: #f8fafc; cursor: pointer; outline: none; }
+    .mesdash .bar-container { display: flex; align-items: flex-end; justify-content: space-between; height: 180px; padding: 0 8px; }
+    .mesdash .bar-column { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .mesdash .bar-track { width: 100%; max-width: 32px; background-color: #dbeafe; border-radius: 6px 6px 0 0; position: relative; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
+    .mesdash .bar-fill { width: 100%; background-color: #0566d9; border-radius: 6px 6px 0 0; transition: height 0.3s; }
+    .mesdash .bar-label { font-size: 11px; font-weight: 700; color: #64748b; white-space: nowrap; }
+    .mesdash .bar-pct { font-family: "JetBrains Mono", monospace; font-size: 11px; color: #0566d9; font-weight: 700; }
 
     /* 불량 유형 프로그레스 바 */
-    .mesdash .defect-list { display: flex; flex-direction: column; gap: var(--md); margin-top: var(--sm); }
-    .mesdash .defect-row { display: flex; flex-direction: column; gap: var(--xs); }
-    .mesdash .defect-info { display: flex; justify-content: space-between; font-size: 13px; color: var(--on-surface); }
+    .mesdash .defect-list { display: flex; flex-direction: column; gap: 16px; margin-top: 10px; }
+    .mesdash .defect-row { display: flex; flex-direction: column; gap: 6px; }
+    .mesdash .defect-info { display: flex; justify-content: space-between; font-size: 13px; color: #0f172a; }
     .mesdash .defect-info span:last-child { font-weight: 700; }
-    .mesdash .defect-bar-track { height: 6px; width: 100%; background-color: var(--surface-container); border-radius: 9999px; overflow: hidden; }
-    .mesdash .defect-bar-fill { height: 100%; background-color: var(--error); border-radius: 9999px; }
+    .mesdash .defect-bar-track { height: 6px; width: 100%; background-color: #f1f5f9; border-radius: 9999px; overflow: hidden; }
+    .mesdash .defect-bar-fill { height: 100%; background-color: #dc2626; border-radius: 9999px; }
 
     /* 하단 테이블 그리드 배치 */
-    .mesdash .bottom-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--md); }
+    .mesdash .bottom-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
     .mesdash .bottom-left { grid-column: span 4 / span 4; }
     .mesdash .bottom-right { grid-column: span 8 / span 8; }
-    
-    .mesdash .card-header-tool { display: flex; justify-content: space-between; align-items: center; padding-bottom: var(--md); border-bottom: 1px solid var(--outline-variant); margin-bottom: var(--md); }
+    @media (max-width: 1100px) {
+      .mesdash .bottom-left, .mesdash .bottom-right { grid-column: span 12 / span 12; }
+    }
+
+    .mesdash .card-header-tool { display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; border-bottom: 1px solid #e2e8f0; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
     .mesdash .search-wrapper { position: relative; display: flex; align-items: center; }
-    .mesdash .search-wrapper .search-icon { position: absolute; left: var(--sm); color: var(--outline); font-size: 18px; }
-    .mesdash .search-input { padding: 6px var(--md) 6px 32px; border: 1px solid var(--outline-variant); border-radius: 4px; font-size: 13px; outline: none; width: 200px; }
-    .mesdash .search-input:focus { border-color: var(--primary); }
+    .mesdash .search-wrapper .search-icon { position: absolute; left: 8px; color: #94a3b8; font-size: 16px; }
+    .mesdash .search-input { padding: 8px 12px 8px 30px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; outline: none; width: 200px; }
+    .mesdash .search-input:focus { border-color: #0566d9; }
 
     .mesdash .data-table { width: 100%; text-align: left; border-collapse: collapse; }
-    .mesdash .data-table th { padding: var(--sm) var(--md); border-bottom: 1px solid var(--outline-variant); font-size: 11px; font-weight: 700; letter-spacing: 0.05em; color: var(--on-surface-variant); background-color: var(--surface-container-low); }
-    .mesdash .data-table td { padding: var(--sm) var(--md); font-size: 13px; border-bottom: 1px solid rgba(197, 198, 205, 0.3); }
-    .mesdash .data-table tbody tr:hover { background-color: var(--surface-container-low); }
+    .mesdash .data-table th { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; font-size: 11px; font-weight: 700; letter-spacing: 0.03em; color: #64748b; background-color: #f8fafc; }
+    .mesdash .data-table td { padding: 12px; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
+    .mesdash .data-table tbody tr:last-child td { border-bottom: none; }
+    .mesdash .data-table tbody tr:hover td { background-color: #f8fafc; }
     .mesdash .font-code { font-family: "JetBrains Mono", monospace; font-size: 12px; }
 
-    .mesdash .status-tag { padding: var(--xs) var(--sm); border-radius: 4px; font-size: 11px; font-weight: 700; }
-    .mesdash .status-tag.isolate { background-color: var(--primary-container); color: var(--primary); }
-    .mesdash .status-tag.inspect { background-color: var(--surface-container-high); color: var(--on-surface-variant); }
-    .mesdash .status-tag.scrap { background-color: #ffdad6; color: var(--error); }
+    .mesdash .status-tag { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .mesdash .status-tag.isolate { background-color: #fee2e2; color: #b91c1c; }
+    .mesdash .status-tag.checking { background-color: #fef9c3; color: #a16207; }
+    .mesdash .status-tag.discard { background-color: #0f172a; color: #ffffff; }
 
     /* 페이지네이션 */
-    .mesdash .table-footer { display: flex; justify-content: space-between; align-items: center; margin-top: var(--md); font-size: 12px; color: var(--on-surface-variant); }
-    .mesdash .page-btn-group { display: flex; gap: var(--xs); }
-    .mesdash .page-btn { padding: var(--xs) var(--sm); border: 1px solid var(--outline-variant); background: var(--surface-container-lowest); border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 700; }
-    .mesdash .page-btn:hover { background-color: var(--surface-container-low); }
+    .mesdash .table-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: 12px; color: #64748b; flex-wrap: wrap; gap: 8px; }
+    .mesdash .page-btn-group { display: flex; gap: 6px; }
+    .mesdash .page-btn { padding: 6px 12px; border: 1px solid #cbd5e1; background: #ffffff; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; color: #475569; }
+    .mesdash .page-btn:hover { background-color: #f1f5f9; }
   `;
 
   return (
@@ -102,9 +118,6 @@ function QualityPage() {
           <p>B-02 라인의 실시간 검사 분석 및 불량 추적 데이터입니다.</p>
         </div>
         <div className="btn-group">
-          <button type="button" className="btn-secondary-outline">
-            <span className="material-symbols-outlined">filter_list</span>필터
-          </button>
           <button type="button" className="btn-primary-filled">
             <span className="material-symbols-outlined">download</span>리포트
             내보내기
@@ -122,7 +135,7 @@ function QualityPage() {
             </div>
             <div className="yield-value">
               <span className="main-num">98.42%</span>
-              <span style={{ fontSize: "12px", color: "var(--outline)" }}>
+              <span style={{ fontSize: "12px", color: "#94a3b8" }}>
                 / 100%
               </span>
             </div>
@@ -164,7 +177,7 @@ function QualityPage() {
               </div>
               <div style={{ fontSize: "13px" }}>
                 <div style={{ fontWeight: "700" }}>148개 재작업 완료</div>
-                <div style={{ fontSize: "11px", color: "var(--outline)" }}>
+                <div style={{ fontSize: "11px", color: "#94a3b8" }}>
                   효율 최적화됨
                 </div>
               </div>
@@ -231,7 +244,7 @@ function QualityPage() {
             <h3>불량 LOT 로그</h3>
             <span
               className="material-symbols-outlined"
-              style={{ color: "var(--outline)", cursor: "pointer" }}
+              style={{ color: "#94a3b8", cursor: "pointer" }}
             >
               history
             </span>
@@ -248,48 +261,43 @@ function QualityPage() {
               <tr>
                 <td className="font-code text-primary">L-20231024-001</td>
                 <td>
-                  <div style={{ fontWeight: "700", color: "var(--error)" }}>
+                  <div style={{ fontWeight: "700", color: "#dc2626" }}>
                     ERR-402
                   </div>
-                  <div style={{ fontSize: "10px", color: "var(--outline)" }}>
+                  <div style={{ fontSize: "10px", color: "#94a3b8" }}>
                     임피던스 초과
                   </div>
                 </td>
                 <td>
-                  <span className="status-tag scrap">격리됨</span>
+                  <span className="status-tag isolate">격리됨</span>
                 </td>
               </tr>
               <tr>
                 <td className="font-code text-primary">L-20231024-005</td>
                 <td>
-                  <div style={{ fontWeight: "700", color: "var(--error)" }}>
+                  <div style={{ fontWeight: "700", color: "#dc2626" }}>
                     ERR-109
                   </div>
-                  <div style={{ fontSize: "10px", color: "var(--outline)" }}>
+                  <div style={{ fontSize: "10px", color: "#94a3b8" }}>
                     정렬 오류
                   </div>
                 </td>
                 <td>
-                  <span className="status-tag inspect">검사중</span>
+                  <span className="status-tag checking">검사중</span>
                 </td>
               </tr>
               <tr>
                 <td className="font-code text-primary">L-20231023-142</td>
                 <td>
-                  <div style={{ fontWeight: "700", color: "var(--error)" }}>
+                  <div style={{ fontWeight: "700", color: "#dc2626" }}>
                     ERR-304
                   </div>
-                  <div style={{ fontSize: "10px", color: "var(--outline)" }}>
+                  <div style={{ fontSize: "10px", color: "#94a3b8" }}>
                     경화 불량
                   </div>
                 </td>
                 <td>
-                  <span
-                    className="status-tag inspect"
-                    style={{ backgroundColor: "#191c20", color: "#fff" }}
-                  >
-                    폐기
-                  </span>
+                  <span className="status-tag discard">폐기</span>
                 </td>
               </tr>
             </tbody>
@@ -299,7 +307,7 @@ function QualityPage() {
         <div className="bottom-right card">
           <div className="card-header-tool">
             <h3>상세 검사 결과</h3>
-            <div style={{ display: "flex", gap: "var(--sm)" }}>
+            <div style={{ display: "flex", gap: "8px" }}>
               <div className="search-wrapper">
                 <span className="material-symbols-outlined search-icon">
                   search
@@ -315,7 +323,7 @@ function QualityPage() {
               <button
                 type="button"
                 className="btn-secondary-outline"
-                style={{ padding: "6px var(--sm)" }}
+                style={{ padding: "6px 8px" }}
               >
                 <span
                   className="material-symbols-outlined"
@@ -385,7 +393,7 @@ function QualityPage() {
                     <td
                       style={{
                         fontWeight: "700",
-                        color: row.ok ? "var(--tertiary)" : "var(--error)",
+                        color: row.ok ? "#16803d" : "#dc2626",
                       }}
                     >
                       <span
@@ -400,7 +408,7 @@ function QualityPage() {
                       </span>
                       {row.ok ? "합격" : "불합격"}
                     </td>
-                    <td style={{ color: "var(--on-surface-variant)" }}>
+                    <td style={{ color: "#64748b" }}>
                       {row.time}
                     </td>
                   </tr>

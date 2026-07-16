@@ -192,7 +192,7 @@ const styles = `
   .status-section { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
   .section-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
   .section-title-row h3 { margin: 0; font-size: 16px; font-weight: 700; }
-  .view-more-link { font-size: 12px; font-weight: 700; color: #02639a; cursor: pointer; }
+  .view-more-link { font-size: 12px; font-weight: 700; color: #0566d9; cursor: pointer; }
   .lines-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
   .line-status-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; background: #ffffff; transition: box-shadow 0.2s; }
   .line-status-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
@@ -204,7 +204,7 @@ const styles = `
   .tag-stopped { background-color: #fee2e2; color: #b91c1c; }
 
   .gauge-bg { background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin: 8px 0; }
-  .gauge-fill { background: #02639a; height: 100%; }
+  .gauge-fill { background: #0566d9; height: 100%; }
 
   .operator-info { margin-top: 14px; padding-top: 10px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; gap: 8px; font-size: 12px; }
   .operator-avatar { width: 24px; height: 24px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; }
@@ -219,7 +219,7 @@ const styles = `
 
   .progress-wrapper { display: flex; align-items: center; gap: 10px; }
   .progress-bar-bg { background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden; width: 100%; }
-  .progress-bar-fill { background: #02639a; height: 100%; }
+  .progress-bar-fill { background: #0566d9; height: 100%; }
   .progress-text { font-size: 12px; font-weight: 700; }
 
   .side-alarm-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
@@ -242,12 +242,12 @@ const styles = `
   .back-link { font-weight: 700; color: #475569; cursor: pointer; background: #e2e8f0; padding: 6px 12px; border-radius: 6px; transition: background 0.2s; }
   .back-link:hover { background: #cbd5e1; }
   .nav-path { color: #94a3b8; font-weight: 600; }
-  .active-path { color: #02639a; font-weight: 700; }
+  .active-path { color: #0566d9; font-weight: 700; }
 
   .line-switch-tabs { display: flex; gap: 6px; background: #f1f5f9; padding: 4px; border-radius: 8px; }
   .line-tab { padding: 6px 14px; font-size: 12px; font-weight: 700; color: #64748b; cursor: pointer; border-radius: 6px; transition: all 0.2s; }
   .line-tab:hover { color: #0f172a; }
-  .line-tab-active { background: #ffffff; color: #02639a; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .line-tab-active { background: #ffffff; color: #0566d9; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
 
   .listener-status { margin-left: auto; font-size: 12px; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 6px; }
   .status-dot { width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%; display: inline-block; }
@@ -266,14 +266,14 @@ const styles = `
   .flow-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
   .flow-header h3 { margin: 0; font-size: 16px; font-weight: 800; }
   .flow-legend { display: flex; gap: 14px; font-size: 12px; font-weight: 700; }
-  .l-run { color: #0284c7; } .l-wait { color: #94a3b8; } .l-error { color: #ef4444; }
+  .l-run { color: #0566d9; } .l-wait { color: #94a3b8; } .l-error { color: #ef4444; }
   .flow-steps { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
   .step-item { flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .step-item.active { border-color: #0284c7; background: #f0f9ff; }
+  .step-item.active { border-color: #0566d9; background: #f0f9ff; }
   .step-item.error { border-color: #fca5a5; background: #fef2f2; }
   .step-item.wait { opacity: 0.6; }
   .step-icon { font-size: 20px; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #e2e8f0; }
-  .active .step-icon { background: #0284c7; color: white; }
+  .active .step-icon { background: #0566d9; color: white; }
   .error .step-icon { background: #ef4444; color: white; }
   .step-name { font-weight: 700; font-size: 13px; }
   .step-tag { font-size: 11px; padding: 3px 8px; background: #e2e8f0; border-radius: 6px; font-family: monospace; }
@@ -290,7 +290,7 @@ const styles = `
   .charts-container { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
   .mock-chart { background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 8px; padding: 16px; min-height: 120px; display: flex; flex-direction: column; justify-content: space-between; }
   .mock-chart p { margin: 0; font-size: 12px; font-weight: 700; color: #64748b; }
-  .chart-value { font-size: 24px; font-weight: 800; color: #0284c7; }
+  .chart-value { font-size: 24px; font-weight: 800; color: #0566d9; }
   .chart-value-sub { font-size: 14px; font-weight: 700; color: #475569; }
   .chart-bar-deco { display: flex; align-items: flex-end; gap: 6px; height: 40px; }
   .chart-bar-deco div { flex: 1; background: #38bdf8; border-radius: 2px; }
@@ -316,7 +316,7 @@ const styles = `
   .status-processing { background: #e0f2fe; color: #0369a1; }
   .status-completed { background: #dcfce7; color: #15803d; }
   .status-stopped { background: #fee2e2; color: #b91c1c; }
-  .btn-text-link { background: transparent; border: none; color: #0284c7; font-size: 12px; font-weight: 700; cursor: pointer; }
+  .btn-text-link { background: transparent; border: none; color: #0566d9; font-size: 12px; font-weight: 700; cursor: pointer; }
   .btn-text-link:hover { text-decoration: underline; }
   .btn-icon { background: #ffffff; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
 
@@ -332,8 +332,8 @@ const styles = `
   .emp-name { font-size: 14px; font-weight: 700; color: #0f172a; }
   .emp-role { font-size: 12px; color: #64748b; margin-top: 2px; }
   
-  .btn-assign { background: #02639a; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
-  .btn-assign:hover { background: #0284c7; }
+  .btn-assign { background: #0566d9; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
+  .btn-assign:hover { opacity: 0.85; }
   .assign-actions { display: flex; gap: 8px; align-items: center; }
   .select-move { border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px; font-size: 12px; color: #475569; outline: none; }
   .btn-remove { background: #fee2e2; color: #dc2626; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
@@ -724,7 +724,7 @@ function ProductionPage() {
                       <div className="op-avatar">{emp.img}</div>
                       <div>
                         <div className="emp-name">{emp.name}</div>
-                        <div className="emp-role">{emp.role} {emp.assignedLine && <strong style={{color:'#0284c7'}}>(Line {emp.assignedLine})</strong>}</div>
+                        <div className="emp-role">{emp.role} {emp.assignedLine && <strong style={{color:'#0566d9'}}>(Line {emp.assignedLine})</strong>}</div>
                       </div>
                     </div>
                     
