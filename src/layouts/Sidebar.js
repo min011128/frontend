@@ -32,6 +32,14 @@ function Sidebar() {
           <span className="material-symbols-outlined">inventory_2</span>
           <span>자재 관리</span>
         </Link>
+
+        {/* 💡 작업지시 (관리자 전용) */}
+        {userRole === "admin" && (
+          <Link to="/work-order" className={`nav-item ${location.pathname === "/work-order" ? "active" : ""}`}>
+            <span className="material-symbols-outlined">assignment</span>
+            <span>작업지시</span>
+          </Link>
+        )}
         
         {/* [수정 포인트] "생산 관리" -> "생산 모니터링"으로 명칭 변경 및 이동 경로를 /production으로 매핑 */}
         <Link to="/production" className={`nav-item ${location.pathname === "/production" ? "active" : ""}`}>

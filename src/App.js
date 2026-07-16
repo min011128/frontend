@@ -9,6 +9,7 @@ import QualityPage from "./pages/QualityPage";
 import AdminEmployeePage from "./pages/AdminEmployeePage";
 import MyPage from "./pages/MyPage"; 
 import MasterDataPage from "./pages/MasterDataPage";
+import WorkOrderPage from "./pages/WorkOrderPage";
 
 function App() {
   // 로컬스토리지 초기값을 기준으로 React 상태(State)를 생성합니다.
@@ -72,6 +73,19 @@ function App() {
           <Route path="/production" element={<ProductionPage />} />
           
           <Route path="/material" element={<MaterialPage />} />
+
+          {/* 💡 작업지시 (관리자 전용) */}
+          <Route 
+            path="/work-order" 
+            element={
+              userRole === "admin" ? (
+                <WorkOrderPage />
+              ) : (
+                <Navigate to="/dashboard" replace />
+              )
+            } 
+          />
+
           <Route path="/quality" element={<QualityPage />} />
           
           {/* 💡 깔끔하게 인증 보호 레이아웃 내부로 합쳐진 마이페이지 */}
