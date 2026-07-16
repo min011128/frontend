@@ -10,6 +10,7 @@ import AdminEmployeePage from "./pages/AdminEmployeePage";
 import MyPage from "./pages/MyPage"; 
 import MasterDataPage from "./pages/MasterDataPage";
 import WorkOrderPage from "./pages/WorkOrderPage";
+import EmployeeDashboardPage from "./pages/EmployeeDashboardPage";
 
 function App() {
   // 로컬스토리지 초기값을 기준으로 React 상태(State)를 생성합니다.
@@ -64,7 +65,10 @@ function App() {
             isLoggedIn ? <MesLayout /> : <Navigate to="/login" replace />
           }
         >
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route
+            path="/dashboard"
+            element={userRole === "admin" ? <DashboardPage /> : <EmployeeDashboardPage />}
+          />
 
           {/* 💡 기준정보 관리 (제품/BOM) */}
           <Route path="/master-data" element={<MasterDataPage />} />
