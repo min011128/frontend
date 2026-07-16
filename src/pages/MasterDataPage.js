@@ -199,6 +199,9 @@ function MasterDataPage() {
   const [selectedId, setSelectedId] = useState(initialProducts[0].id);
   const [searchTerm, setSearchTerm] = useState("");
 
+  // ---- 관리자 인증 상태 (현재는 관리자로 로그인된 상태로 시작) ----
+  const [isAdmin] = useState(true);
+
   const [showProductModal, setShowProductModal] = useState(false);
   const [productModalMode, setProductModalMode] = useState("add");
   const [productForm, setProductForm] = useState(emptyProductForm);
@@ -249,6 +252,7 @@ function MasterDataPage() {
 
   const handleProductSubmit = (e) => {
     e.preventDefault();
+    if (!isAdmin) return;
     if (!productForm.name || !productForm.sku) {
       alert("제품명과 SKU는 필수 입력 항목입니다.");
       return;
@@ -295,6 +299,7 @@ function MasterDataPage() {
   };
 
   const handleDeleteProduct = () => {
+    if (!isAdmin) return;
     if (!selectedProduct) return;
     if (!window.confirm(`${selectedProduct.name}을(를) 삭제하시겠습니까?`)) return;
     const remaining = products.filter((p) => p.id !== selectedProduct.id);
@@ -317,6 +322,7 @@ function MasterDataPage() {
 
   const handleBomSubmit = (e) => {
     e.preventDefault();
+    if (!isAdmin) return;
     if (!bomForm.partId || !bomForm.name) {
       alert("부품 ID와 품명은 필수 입력 항목입니다.");
       return;
@@ -330,6 +336,7 @@ function MasterDataPage() {
   };
 
   const handleDeleteBomPart = (partId) => {
+    if (!isAdmin) return;
     if (!window.confirm(`부품 ${partId}를 BOM에서 삭제하시겠습니까?`)) return;
     setProducts(
       products.map((p) =>
@@ -339,273 +346,283 @@ function MasterDataPage() {
   };
 
   return (
-    <div className="master-container">
+    <div>
       <style>{styles}</style>
 
-      {/* 좌측: 제품 목록 */}
-      <div className="list-panel">
-        <div className="list-panel-header">
-          <h3>제품 목록</h3>
-          <button className="btn-primary" onClick={openAddProductModal}>+ 신규 제품 등록</button>
+      <div className="master-container">
+        {/* 좌측: 제품 목록 */}
+        <div className="list-panel">
+          <div className="list-panel-header">
+            <h3>제품 목록</h3>
+            {isAdmin && (
+              <button className="btn-primary" onClick={openAddProductModal}>+ 신규 제품 등록</button>
+            )}
+          </div>
+
+          <div className="search-box-wrap">
+            <span className="icon">🔍</span>
+            <input
+              type="text"
+              className="search-box-full"
+              placeholder="모델명 검색..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+
+          <div className="product-list">
+            {filteredProducts.map((p) => (
+              <div
+                key={p.id}
+                className={`product-card ${p.id === selectedId ? "active" : ""}`}
+                onClick={() => setSelectedId(p.id)}
+              >
+                <div className="product-card-top">
+                  <span className="p-name">{p.name}</span>
+                  <span className={`status-badge ${STATUS_CLASS[p.status]}`}>{p.status}</span>
+                </div>
+                <div className="p-sku">SKU: {p.sku}</div>
+                <div className="p-meta">
+                  <span>BOM {p.bomVersion}</span>
+                  <span>사양 업데이트: {p.specUpdated}</span>
+                </div>
+              </div>
+            ))}
+            {filteredProducts.length === 0 && (
+              <div className="empty-detail" style={{ padding: "30px" }}>검색 결과가 없습니다.</div>
+            )}
+          </div>
         </div>
 
-        <div className="search-box-wrap">
-          <span className="icon">🔍</span>
-          <input
-            type="text"
-            className="search-box-full"
-            placeholder="모델명 검색..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+        {/* 우측: 상세 정보 */}
+        <div className="detail-panel">
+          {!selectedProduct ? (
+            <div className="empty-detail">좌측에서 제품을 선택하거나 신규 제품을 등록하세요.</div>
+          ) : (
+            <>
+              <div className="breadcrumb">
+                기준정보 관리 / 제품 목록 / <span className="current">{selectedProduct.name.replace("EV 릴레이 ", "")}</span>
+              </div>
 
-        <div className="product-list">
-          {filteredProducts.map((p) => (
-            <div
-              key={p.id}
-              className={`product-card ${p.id === selectedId ? "active" : ""}`}
-              onClick={() => setSelectedId(p.id)}
-            >
-              <div className="product-card-top">
-                <span className="p-name">{p.name}</span>
-                <span className={`status-badge ${STATUS_CLASS[p.status]}`}>{p.status}</span>
+              <div className="detail-title-row">
+                <div>
+                  <h2>{selectedProduct.name}</h2>
+                  <p>{selectedProduct.description}</p>
+                </div>
+                <div className="detail-actions">
+                  <button className="btn-outline" onClick={() => alert("스키마를 내보냈습니다. (Mock)")}>⭳ 스키마 내보내기</button>
+                  {isAdmin && (
+                    <button className="btn-edit" onClick={openEditProductModal}>✎ 정보 수정</button>
+                  )}
+                </div>
               </div>
-              <div className="p-sku">SKU: {p.sku}</div>
-              <div className="p-meta">
-                <span>BOM {p.bomVersion}</span>
-                <span>사양 업데이트: {p.specUpdated}</span>
+
+              <div className="spec-row">
+                <div className="card">
+                  <div className="card-title">🧭 주요 기술 사양</div>
+                  <div className="spec-grid">
+                    <div className="spec-item"><div className="s-label">최대전압</div><div className="s-value">{selectedProduct.specs.maxVoltage}</div></div>
+                    <div className="spec-item"><div className="s-label">정격전류</div><div className="s-value">{selectedProduct.specs.ratedCurrent}</div></div>
+                    <div className="spec-item"><div className="s-label">절연</div><div className="s-value">{selectedProduct.specs.insulation}</div></div>
+                    <div className="spec-item"><div className="s-label">응답 시간</div><div className="s-value">{selectedProduct.specs.responseTime}</div></div>
+                    <div className="spec-item"><div className="s-label">내열 한계</div><div className="s-value">{selectedProduct.specs.heatLimit}</div></div>
+                    <div className="spec-item"><div className="s-label">무게</div><div className="s-value">{selectedProduct.specs.weight}</div></div>
+                  </div>
+                </div>
+
+                <div className="card visual-card">
+                  <div className="visual-thumb">{selectedProduct.image}</div>
+                  <div className="v-title">제품 시각 자료</div>
+                  <div className="v-file">{selectedProduct.visualFile}</div>
+                </div>
               </div>
-            </div>
-          ))}
-          {filteredProducts.length === 0 && (
-            <div className="empty-detail" style={{ padding: "30px" }}>검색 결과가 없습니다.</div>
+
+              <div className="card">
+                <div className="bom-card-header">
+                  <div className="card-title" style={{ marginBottom: 0 }}>🗂 BOM (자재 명세서)</div>
+                  <div className="bom-header-right">
+                    <span className="bom-count">총 부품 수: {String(selectedProduct.bom.length).padStart(2, "0")}</span>
+                    <button className="link-btn" onClick={() => alert("이력 보기 기능은 준비 중입니다.")}>이력 보기</button>
+                  </div>
+                </div>
+
+                <table className="bom-table">
+                  <thead>
+                    <tr>
+                      <th>부품 ID</th>
+                      <th>품명/설명</th>
+                      <th>수량</th>
+                      <th>단위</th>
+                      <th>공급사</th>
+                      <th>상태</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedProduct.bom.map((part) => (
+                      <tr key={part.partId}>
+                        <td className="part-id">{part.partId}</td>
+                        <td>{part.name}</td>
+                        <td>{part.qty}</td>
+                        <td>{part.unit}</td>
+                        <td>{part.supplier}</td>
+                        <td>
+                          <div className="part-actions">
+                            <span className={`status-badge ${PART_STATUS_CLASS[part.status]}`}>{part.status}</span>
+                            {isAdmin && (
+                              <button className="btn-del-part" onClick={() => handleDeleteBomPart(part.partId)} title="삭제">✕</button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {selectedProduct.bom.length === 0 && (
+                      <tr>
+                        <td colSpan="6" style={{ textAlign: "center", padding: "30px", color: "#94a3b8" }}>등록된 부품이 없습니다.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+
+                {isAdmin && (
+                  <div className="bom-footer">
+                    <button className="btn-add-part" onClick={openAddBomModal}>⊕ BOM 부품 추가</button>
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
-      </div>
 
-      {/* 우측: 상세 정보 */}
-      <div className="detail-panel">
-        {!selectedProduct ? (
-          <div className="empty-detail">좌측에서 제품을 선택하거나 신규 제품을 등록하세요.</div>
-        ) : (
-          <>
-            <div className="breadcrumb">
-              기준정보 관리 / 제품 목록 / <span className="current">{selectedProduct.name.replace("EV 릴레이 ", "")}</span>
-            </div>
-
-            <div className="detail-title-row">
-              <div>
-                <h2>{selectedProduct.name}</h2>
-                <p>{selectedProduct.description}</p>
+        {/* 제품 등록/수정 모달 */}
+        {showProductModal && isAdmin && (
+          <div className="modal-overlay" onClick={closeProductModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3>{productModalMode === "add" ? "신규 제품 등록" : "제품 정보 수정"}</h3>
+                <button className="btn-close" onClick={closeProductModal}>✕</button>
               </div>
-              <div className="detail-actions">
-                <button className="btn-outline" onClick={() => alert("스키마를 내보냈습니다. (Mock)")}>⭳ 스키마 내보내기</button>
-                <button className="btn-edit" onClick={openEditProductModal}>✎ 정보 수정</button>
-              </div>
-            </div>
-
-            <div className="spec-row">
-              <div className="card">
-                <div className="card-title">🧭 주요 기술 사양</div>
-                <div className="spec-grid">
-                  <div className="spec-item"><div className="s-label">최대전압</div><div className="s-value">{selectedProduct.specs.maxVoltage}</div></div>
-                  <div className="spec-item"><div className="s-label">정격전류</div><div className="s-value">{selectedProduct.specs.ratedCurrent}</div></div>
-                  <div className="spec-item"><div className="s-label">절연</div><div className="s-value">{selectedProduct.specs.insulation}</div></div>
-                  <div className="spec-item"><div className="s-label">응답 시간</div><div className="s-value">{selectedProduct.specs.responseTime}</div></div>
-                  <div className="spec-item"><div className="s-label">내열 한계</div><div className="s-value">{selectedProduct.specs.heatLimit}</div></div>
-                  <div className="spec-item"><div className="s-label">무게</div><div className="s-value">{selectedProduct.specs.weight}</div></div>
+              <form onSubmit={handleProductSubmit}>
+                <div className="form-row2">
+                  <div className="form-group">
+                    <label>제품명</label>
+                    <input type="text" name="name" placeholder="예: EV 릴레이 모델 C" value={productForm.name} onChange={handleProductFormChange} />
+                  </div>
+                  <div className="form-group">
+                    <label>SKU</label>
+                    <input type="text" name="sku" placeholder="예: REL-2024-XC" value={productForm.sku} onChange={handleProductFormChange} />
+                  </div>
                 </div>
-              </div>
 
-              <div className="card visual-card">
-                <div className="visual-thumb">{selectedProduct.image}</div>
-                <div className="v-title">제품 시각 자료</div>
-                <div className="v-file">{selectedProduct.visualFile}</div>
-              </div>
-            </div>
-
-            <div className="card">
-              <div className="bom-card-header">
-                <div className="card-title" style={{ marginBottom: 0 }}>🗂 BOM (자재 명세서)</div>
-                <div className="bom-header-right">
-                  <span className="bom-count">총 부품 수: {String(selectedProduct.bom.length).padStart(2, "0")}</span>
-                  <button className="link-btn" onClick={() => alert("이력 보기 기능은 준비 중입니다.")}>이력 보기</button>
+                <div className="form-group">
+                  <label>설명</label>
+                  <textarea name="description" rows="2" placeholder="제품 설명을 입력하세요" value={productForm.description} onChange={handleProductFormChange} />
                 </div>
-              </div>
 
-              <table className="bom-table">
-                <thead>
-                  <tr>
-                    <th>부품 ID</th>
-                    <th>품명/설명</th>
-                    <th>수량</th>
-                    <th>단위</th>
-                    <th>공급사</th>
-                    <th>상태</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedProduct.bom.map((part) => (
-                    <tr key={part.partId}>
-                      <td className="part-id">{part.partId}</td>
-                      <td>{part.name}</td>
-                      <td>{part.qty}</td>
-                      <td>{part.unit}</td>
-                      <td>{part.supplier}</td>
-                      <td>
-                        <div className="part-actions">
-                          <span className={`status-badge ${PART_STATUS_CLASS[part.status]}`}>{part.status}</span>
-                          <button className="btn-del-part" onClick={() => handleDeleteBomPart(part.partId)} title="삭제">✕</button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                  {selectedProduct.bom.length === 0 && (
-                    <tr>
-                      <td colSpan="6" style={{ textAlign: "center", padding: "30px", color: "#94a3b8" }}>등록된 부품이 없습니다.</td>
-                    </tr>
+                <div className="form-row2">
+                  <div className="form-group">
+                    <label>상태</label>
+                    <select name="status" value={productForm.status} onChange={handleProductFormChange}>
+                      {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>BOM 버전</label>
+                    <input type="text" name="bomVersion" placeholder="예: V1.0" value={productForm.bomVersion} onChange={handleProductFormChange} />
+                  </div>
+                </div>
+
+                <div className="form-section-label">주요 기술 사양</div>
+                <div className="form-row3">
+                  <div className="form-group">
+                    <label>최대전압</label>
+                    <input type="text" name="maxVoltage" placeholder="800V DC" value={productForm.maxVoltage} onChange={handleProductFormChange} />
+                  </div>
+                  <div className="form-group">
+                    <label>정격전류</label>
+                    <input type="text" name="ratedCurrent" placeholder="250A" value={productForm.ratedCurrent} onChange={handleProductFormChange} />
+                  </div>
+                  <div className="form-group">
+                    <label>절연</label>
+                    <input type="text" name="insulation" placeholder="5.0 kV" value={productForm.insulation} onChange={handleProductFormChange} />
+                  </div>
+                </div>
+                <div className="form-row3">
+                  <div className="form-group">
+                    <label>응답 시간</label>
+                    <input type="text" name="responseTime" placeholder="< 15ms" value={productForm.responseTime} onChange={handleProductFormChange} />
+                  </div>
+                  <div className="form-group">
+                    <label>내열 한계</label>
+                    <input type="text" name="heatLimit" placeholder="125°C" value={productForm.heatLimit} onChange={handleProductFormChange} />
+                  </div>
+                  <div className="form-group">
+                    <label>무게</label>
+                    <input type="text" name="weight" placeholder="340g" value={productForm.weight} onChange={handleProductFormChange} />
+                  </div>
+                </div>
+
+                <div className="modal-footer">
+                  {productModalMode === "edit" && (
+                    <button type="button" className="danger-btn" onClick={handleDeleteProduct}>삭제</button>
                   )}
-                </tbody>
-              </table>
-
-              <div className="bom-footer">
-                <button className="btn-add-part" onClick={openAddBomModal}>⊕ BOM 부품 추가</button>
-              </div>
+                  <button type="submit" className="submit-btn">
+                    {productModalMode === "add" ? "제품 등록하기" : "변경사항 저장"}
+                  </button>
+                </div>
+              </form>
             </div>
-          </>
+          </div>
+        )}
+
+        {/* BOM 부품 추가 모달 */}
+        {showBomModal && isAdmin && (
+          <div className="modal-overlay" onClick={closeBomModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3>BOM 부품 추가</h3>
+                <button className="btn-close" onClick={closeBomModal}>✕</button>
+              </div>
+              <form onSubmit={handleBomSubmit}>
+                <div className="form-row2">
+                  <div className="form-group">
+                    <label>부품 ID</label>
+                    <input type="text" name="partId" placeholder="예: XX-0000-X" value={bomForm.partId} onChange={handleBomFormChange} />
+                  </div>
+                  <div className="form-group">
+                    <label>공급사</label>
+                    <input type="text" name="supplier" placeholder="공급사명" value={bomForm.supplier} onChange={handleBomFormChange} />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label>품명/설명</label>
+                  <input type="text" name="name" placeholder="부품 명칭" value={bomForm.name} onChange={handleBomFormChange} />
+                </div>
+                <div className="form-row3">
+                  <div className="form-group">
+                    <label>수량</label>
+                    <input type="text" name="qty" placeholder="1" value={bomForm.qty} onChange={handleBomFormChange} />
+                  </div>
+                  <div className="form-group">
+                    <label>단위</label>
+                    <select name="unit" value={bomForm.unit} onChange={handleBomFormChange}>
+                      {UNIT_OPTIONS.map((u) => <option key={u} value={u}>{u}</option>)}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>상태</label>
+                    <select name="status" value={bomForm.status} onChange={handleBomFormChange}>
+                      {PART_STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button type="submit" className="submit-btn">부품 추가하기</button>
+                </div>
+              </form>
+            </div>
+          </div>
         )}
       </div>
-
-      {/* 제품 등록/수정 모달 */}
-      {showProductModal && (
-        <div className="modal-overlay" onClick={closeProductModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>{productModalMode === "add" ? "신규 제품 등록" : "제품 정보 수정"}</h3>
-              <button className="btn-close" onClick={closeProductModal}>✕</button>
-            </div>
-            <form onSubmit={handleProductSubmit}>
-              <div className="form-row2">
-                <div className="form-group">
-                  <label>제품명</label>
-                  <input type="text" name="name" placeholder="예: EV 릴레이 모델 C" value={productForm.name} onChange={handleProductFormChange} />
-                </div>
-                <div className="form-group">
-                  <label>SKU</label>
-                  <input type="text" name="sku" placeholder="예: REL-2024-XC" value={productForm.sku} onChange={handleProductFormChange} />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>설명</label>
-                <textarea name="description" rows="2" placeholder="제품 설명을 입력하세요" value={productForm.description} onChange={handleProductFormChange} />
-              </div>
-
-              <div className="form-row2">
-                <div className="form-group">
-                  <label>상태</label>
-                  <select name="status" value={productForm.status} onChange={handleProductFormChange}>
-                    {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>BOM 버전</label>
-                  <input type="text" name="bomVersion" placeholder="예: V1.0" value={productForm.bomVersion} onChange={handleProductFormChange} />
-                </div>
-              </div>
-
-              <div className="form-section-label">주요 기술 사양</div>
-              <div className="form-row3">
-                <div className="form-group">
-                  <label>최대전압</label>
-                  <input type="text" name="maxVoltage" placeholder="800V DC" value={productForm.maxVoltage} onChange={handleProductFormChange} />
-                </div>
-                <div className="form-group">
-                  <label>정격전류</label>
-                  <input type="text" name="ratedCurrent" placeholder="250A" value={productForm.ratedCurrent} onChange={handleProductFormChange} />
-                </div>
-                <div className="form-group">
-                  <label>절연</label>
-                  <input type="text" name="insulation" placeholder="5.0 kV" value={productForm.insulation} onChange={handleProductFormChange} />
-                </div>
-              </div>
-              <div className="form-row3">
-                <div className="form-group">
-                  <label>응답 시간</label>
-                  <input type="text" name="responseTime" placeholder="< 15ms" value={productForm.responseTime} onChange={handleProductFormChange} />
-                </div>
-                <div className="form-group">
-                  <label>내열 한계</label>
-                  <input type="text" name="heatLimit" placeholder="125°C" value={productForm.heatLimit} onChange={handleProductFormChange} />
-                </div>
-                <div className="form-group">
-                  <label>무게</label>
-                  <input type="text" name="weight" placeholder="340g" value={productForm.weight} onChange={handleProductFormChange} />
-                </div>
-              </div>
-
-              <div className="modal-footer">
-                {productModalMode === "edit" && (
-                  <button type="button" className="danger-btn" onClick={handleDeleteProduct}>삭제</button>
-                )}
-                <button type="submit" className="submit-btn">
-                  {productModalMode === "add" ? "제품 등록하기" : "변경사항 저장"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* BOM 부품 추가 모달 */}
-      {showBomModal && (
-        <div className="modal-overlay" onClick={closeBomModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>BOM 부품 추가</h3>
-              <button className="btn-close" onClick={closeBomModal}>✕</button>
-            </div>
-            <form onSubmit={handleBomSubmit}>
-              <div className="form-row2">
-                <div className="form-group">
-                  <label>부품 ID</label>
-                  <input type="text" name="partId" placeholder="예: XX-0000-X" value={bomForm.partId} onChange={handleBomFormChange} />
-                </div>
-                <div className="form-group">
-                  <label>공급사</label>
-                  <input type="text" name="supplier" placeholder="공급사명" value={bomForm.supplier} onChange={handleBomFormChange} />
-                </div>
-              </div>
-              <div className="form-group">
-                <label>품명/설명</label>
-                <input type="text" name="name" placeholder="부품 명칭" value={bomForm.name} onChange={handleBomFormChange} />
-              </div>
-              <div className="form-row3">
-                <div className="form-group">
-                  <label>수량</label>
-                  <input type="text" name="qty" placeholder="1" value={bomForm.qty} onChange={handleBomFormChange} />
-                </div>
-                <div className="form-group">
-                  <label>단위</label>
-                  <select name="unit" value={bomForm.unit} onChange={handleBomFormChange}>
-                    {UNIT_OPTIONS.map((u) => <option key={u} value={u}>{u}</option>)}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>상태</label>
-                  <select name="status" value={bomForm.status} onChange={handleBomFormChange}>
-                    {PART_STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </div>
-              </div>
-              <div className="modal-footer">
-                <button type="submit" className="submit-btn">부품 추가하기</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
