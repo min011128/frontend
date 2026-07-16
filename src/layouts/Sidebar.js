@@ -22,6 +22,12 @@ function Sidebar() {
           <span>대시보드</span>
         </Link>
         
+        {/* 💡 기준정보 관리 (제품/BOM) */}
+        <Link to="/master-data" className={`nav-item ${location.pathname === "/master-data" ? "active" : ""}`}>
+          <span className="material-symbols-outlined">database</span>
+          <span>기준정보 관리</span>
+        </Link>
+
         <Link to="/material" className={`nav-item ${location.pathname === "/material" ? "active" : ""}`}>
           <span className="material-symbols-outlined">inventory_2</span>
           <span>자재 관리</span>

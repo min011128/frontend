@@ -8,6 +8,7 @@ import LoginPage from "./pages/LoginPage";
 import QualityPage from "./pages/QualityPage";
 import AdminEmployeePage from "./pages/AdminEmployeePage";
 import MyPage from "./pages/MyPage"; 
+import MasterDataPage from "./pages/MasterDataPage";
 
 function App() {
   // 로컬스토리지 초기값을 기준으로 React 상태(State)를 생성합니다.
@@ -63,6 +64,9 @@ function App() {
           }
         >
           <Route path="/dashboard" element={<DashboardPage />} />
+
+          {/* 💡 기준정보 관리 (제품/BOM) */}
+          <Route path="/master-data" element={<MasterDataPage />} />
           
           {/* 2. [수정 포인트] 경로를 /production으로 변경하고, 기존 WorkOrderPage를 ProductionPage로 교체했습니다. */}
           <Route path="/production" element={<ProductionPage />} />
