@@ -1,7 +1,95 @@
 import React, { useState } from "react";
 
+// -------------------------------------------------------------
+// [더미 데이터] 조별 공정 수율
+// -------------------------------------------------------------
+const shiftYieldData = {
+  A: {
+    label: "A조: 06:00 - 14:00",
+    bars: [
+      { label: "S-01 권선", pct: 99.5 },
+      { label: "S-02 레이저", pct: 97.2 },
+      { label: "S-03 하우징", pct: 94.8 },
+      { label: "S-04 레진", pct: 98.9 },
+      { label: "S-05 최종검사", pct: 96.5 },
+    ],
+  },
+  B: {
+    label: "B조: 14:00 - 22:00",
+    bars: [
+      { label: "S-01 권선", pct: 98.1 },
+      { label: "S-02 레이저", pct: 95.6 },
+      { label: "S-03 하우징", pct: 92.3 },
+      { label: "S-04 레진", pct: 97.4 },
+      { label: "S-05 최종검사", pct: 93.8 },
+    ],
+  },
+  C: {
+    label: "C조: 22:00 - 06:00",
+    bars: [
+      { label: "S-01 권선", pct: 96.7 },
+      { label: "S-02 레이저", pct: 93.4 },
+      { label: "S-03 하우징", pct: 89.9 },
+      { label: "S-04 레진", pct: 95.2 },
+      { label: "S-05 최종검사", pct: 90.1 },
+    ],
+  },
+};
+
+// -------------------------------------------------------------
+// [더미 데이터] 상세 검사 결과 (페이지네이션 확인용으로 다건 등록)
+// -------------------------------------------------------------
+const allInspectionResults = [
+  { id: "EV-R-49201-AX", test: "저항", val: "4.21 Ω (오차: ±0.2)", ok: true, time: "14:42:15" },
+  { id: "EV-R-49202-AX", test: "외관", val: "98.2% 투명도", ok: true, time: "14:42:30" },
+  { id: "EV-R-49203-AX", test: "압력", val: "0.12 MPa 누출", ok: false, time: "14:42:58" },
+  { id: "EV-R-49204-AX", test: "저항", val: "4.18 Ω", ok: true, time: "14:43:12" },
+  { id: "EV-R-49205-AX", test: "압력", val: "0.01 MPa 누출", ok: true, time: "14:43:45" },
+  { id: "EV-R-49206-AX", test: "온도", val: "23.4°C", ok: true, time: "14:44:02" },
+  { id: "EV-R-49207-AX", test: "절연저항", val: "5.2 MΩ", ok: true, time: "14:44:20" },
+  { id: "EV-R-49208-AX", test: "외관", val: "94.1% 투명도", ok: false, time: "14:44:47" },
+  { id: "EV-R-49209-AX", test: "저항", val: "4.35 Ω (오차 초과)", ok: false, time: "14:45:03" },
+  { id: "EV-R-49210-AX", test: "압력", val: "0.02 MPa 누출", ok: true, time: "14:45:29" },
+  { id: "EV-R-49211-AX", test: "온도", val: "24.0°C", ok: true, time: "14:45:51" },
+  { id: "EV-R-49212-AX", test: "절연저항", val: "5.5 MΩ", ok: true, time: "14:46:10" },
+  { id: "EV-R-49213-AX", test: "외관", val: "97.8% 투명도", ok: true, time: "14:46:33" },
+];
+
 function QualityPage() {
   const [searchSerial, setSearchInput] = useState("");
+  const [selectedShift, setSelectedShift] = useState("A");
+  const [showFilterPanel, setShowFilterPanel] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("all"); // all | pass | fail
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 5;
+
+  const filteredResults = allInspectionResults
+    .filter((row) => row.id.toLowerCase().includes(searchSerial.toLowerCase()))
+    .filter((row) => {
+      if (statusFilter === "pass") return row.ok;
+      if (statusFilter === "fail") return !row.ok;
+      return true;
+    });
+
+  const totalPages = Math.max(1, Math.ceil(filteredResults.length / ITEMS_PER_PAGE));
+  const safePage = Math.min(currentPage, totalPages);
+  const pageResults = filteredResults.slice(
+    (safePage - 1) * ITEMS_PER_PAGE,
+    safePage * ITEMS_PER_PAGE
+  );
+  const rangeStart = filteredResults.length === 0 ? 0 : (safePage - 1) * ITEMS_PER_PAGE + 1;
+  const rangeEnd = Math.min(safePage * ITEMS_PER_PAGE, filteredResults.length);
+
+  const handleSearchChange = (e) => {
+    setSearchInput(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleStatusFilterChange = (value) => {
+    setStatusFilter(value);
+    setCurrentPage(1);
+    setShowFilterPanel(false);
+  };
 
   const styles = `
     .mesdash { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #334155; }
@@ -59,9 +147,9 @@ function QualityPage() {
     /* 공정별 수율 차트 */
     .mesdash .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
     .mesdash .chart-select { border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 8px; font-size: 12px; font-weight: 700; color: #64748b; background: #f8fafc; cursor: pointer; outline: none; }
-    .mesdash .bar-container { display: flex; align-items: flex-end; justify-content: space-between; height: 180px; padding: 0 8px; }
-    .mesdash .bar-column { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .mesdash .bar-track { width: 100%; max-width: 32px; background-color: #dbeafe; border-radius: 6px 6px 0 0; position: relative; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
+    .mesdash .bar-container { display: flex; align-items: flex-end; justify-content: space-between; height: 200px; padding: 0 8px; }
+    .mesdash .bar-column { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px; height: 100%; }
+    .mesdash .bar-track { width: 100%; max-width: 32px; background-color: #dbeafe; border-radius: 6px 6px 0 0; position: relative; height: 140px; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
     .mesdash .bar-fill { width: 100%; background-color: #0566d9; border-radius: 6px 6px 0 0; transition: height 0.3s; }
     .mesdash .bar-label { font-size: 11px; font-weight: 700; color: #64748b; white-space: nowrap; }
     .mesdash .bar-pct { font-family: "JetBrains Mono", monospace; font-size: 11px; color: #0566d9; font-weight: 700; }
@@ -100,11 +188,22 @@ function QualityPage() {
     .mesdash .status-tag.checking { background-color: #fef9c3; color: #a16207; }
     .mesdash .status-tag.discard { background-color: #0f172a; color: #ffffff; }
 
+    /* 상세 검사 결과: 필터 드롭다운 */
+    .mesdash .filter-wrapper { position: relative; }
+    .mesdash .filter-panel { position: absolute; top: 44px; right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); z-index: 20; min-width: 160px; padding: 6px; }
+    .mesdash .filter-panel-title { font-size: 11px; font-weight: 700; color: #94a3b8; padding: 6px 8px 2px; }
+    .mesdash .filter-option { padding: 8px; border-radius: 6px; font-size: 12px; font-weight: 600; color: #334155; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+    .mesdash .filter-option:hover { background: #f1f5f9; }
+    .mesdash .filter-option.selected { background: #eaf2fc; color: #0566d9; font-weight: 700; }
+
     /* 페이지네이션 */
     .mesdash .table-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: 12px; color: #64748b; flex-wrap: wrap; gap: 8px; }
     .mesdash .page-btn-group { display: flex; gap: 6px; }
     .mesdash .page-btn { padding: 6px 12px; border: 1px solid #cbd5e1; background: #ffffff; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; color: #475569; }
     .mesdash .page-btn:hover { background-color: #f1f5f9; }
+    .mesdash .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .mesdash .page-btn:disabled:hover { background-color: #ffffff; }
+    .mesdash .page-info { font-family: "JetBrains Mono", monospace; }
   `;
 
   return (
@@ -188,24 +287,24 @@ function QualityPage() {
         <div className="bento-center card">
           <div className="chart-header">
             <h3>공정별 수율 현황</h3>
-            <select className="chart-select">
-              <option>A조: 06:00 - 14:00</option>
+            <select
+              className="chart-select"
+              value={selectedShift}
+              onChange={(e) => setSelectedShift(e.target.value)}
+            >
+              {Object.entries(shiftYieldData).map(([key, shift]) => (
+                <option key={key} value={key}>{shift.label}</option>
+              ))}
             </select>
           </div>
           <div className="bar-container">
-            {[
-              { label: "S-01 권선", pct: "99.5%", h: "99.5%" },
-              { label: "S-02 레이저", pct: "97.2%", h: "97.2%" },
-              { label: "S-03 하우징", pct: "94.8%", h: "94.8%" },
-              { label: "S-04 레진", pct: "98.9%", h: "98.9%" },
-              { label: "S-05 최종검사", pct: "96.5%", h: "96.5%" },
-            ].map((bar, idx) => (
+            {shiftYieldData[selectedShift].bars.map((bar, idx) => (
               <div key={idx} className="bar-column">
                 <div className="bar-track">
-                  <div className="bar-fill" style={{ height: bar.h }}></div>
+                  <div className="bar-fill" style={{ height: `${bar.pct}%` }}></div>
                 </div>
                 <span className="bar-label">{bar.label}</span>
-                <span className="bar-pct">{bar.pct}</span>
+                <span className="bar-pct">{bar.pct}%</span>
               </div>
             ))}
           </div>
@@ -317,21 +416,47 @@ function QualityPage() {
                   className="search-input"
                   placeholder="시리얼 ID 검색..."
                   value={searchSerial}
-                  onChange={(e) => setSearchInput(e.target.value)}
+                  onChange={handleSearchChange}
                 />
               </div>
-              <button
-                type="button"
-                className="btn-secondary-outline"
-                style={{ padding: "6px 8px" }}
-              >
-                <span
-                  className="material-symbols-outlined"
-                  style={{ margin: 0 }}
+              <div className="filter-wrapper">
+                <button
+                  type="button"
+                  className="btn-secondary-outline"
+                  style={{ padding: "6px 8px" }}
+                  onClick={() => setShowFilterPanel((prev) => !prev)}
                 >
-                  tune
-                </span>
-              </button>
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ margin: 0 }}
+                  >
+                    tune
+                  </span>
+                </button>
+                {showFilterPanel && (
+                  <div className="filter-panel">
+                    <div className="filter-panel-title">상태로 필터</div>
+                    <div
+                      className={`filter-option ${statusFilter === "all" ? "selected" : ""}`}
+                      onClick={() => handleStatusFilterChange("all")}
+                    >
+                      전체 보기 {statusFilter === "all" && "✓"}
+                    </div>
+                    <div
+                      className={`filter-option ${statusFilter === "pass" ? "selected" : ""}`}
+                      onClick={() => handleStatusFilterChange("pass")}
+                    >
+                      합격만 보기 {statusFilter === "pass" && "✓"}
+                    </div>
+                    <div
+                      className={`filter-option ${statusFilter === "fail" ? "selected" : ""}`}
+                      onClick={() => handleStatusFilterChange("fail")}
+                    >
+                      불합격만 보기 {statusFilter === "fail" && "✓"}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <table className="data-table">
@@ -345,47 +470,7 @@ function QualityPage() {
               </tr>
             </thead>
             <tbody>
-              {[
-                {
-                  id: "EV-R-49201-AX",
-                  test: "저항",
-                  val: "4.21 Ω (오차: ±0.2)",
-                  ok: true,
-                  time: "14:42:15",
-                },
-                {
-                  id: "EV-R-49202-AX",
-                  test: "외관",
-                  val: "98.2% 투명도",
-                  ok: true,
-                  time: "14:42:30",
-                },
-                {
-                  id: "EV-R-49203-AX",
-                  test: "압력",
-                  val: "0.12 MPa 누출",
-                  ok: false,
-                  time: "14:42:58",
-                },
-                {
-                  id: "EV-R-49204-AX",
-                  test: "저항",
-                  val: "4.18 Ω",
-                  ok: true,
-                  time: "14:43:12",
-                },
-                {
-                  id: "EV-R-49205-AX",
-                  test: "압력",
-                  val: "0.01 MPa 누출",
-                  ok: true,
-                  time: "14:43:45",
-                },
-              ]
-                .filter((row) =>
-                  row.id.toLowerCase().includes(searchSerial.toLowerCase()),
-                )
-                .map((row, idx) => (
+              {pageResults.map((row, idx) => (
                   <tr key={idx}>
                     <td className="font-code text-primary">{row.id}</td>
                     <td>{row.test}</td>
@@ -413,15 +498,32 @@ function QualityPage() {
                     </td>
                   </tr>
                 ))}
+              {pageResults.length === 0 && (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: "center", padding: "30px", color: "#94a3b8" }}>
+                    조건에 맞는 검사 결과가 없습니다.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
           <div className="table-footer">
-            <span>총 1,285개 중 1-5 표시 중</span>
+            <span className="page-info">총 {filteredResults.length}개 중 {rangeStart}-{rangeEnd} 표시 중</span>
             <div className="page-btn-group">
-              <button type="button" className="page-btn">
+              <button
+                type="button"
+                className="page-btn"
+                disabled={safePage <= 1}
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              >
                 이전
               </button>
-              <button type="button" className="page-btn">
+              <button
+                type="button"
+                className="page-btn"
+                disabled={safePage >= totalPages}
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              >
                 다음
               </button>
             </div>
