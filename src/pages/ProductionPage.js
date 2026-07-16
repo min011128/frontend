@@ -189,9 +189,6 @@ const styles = `
   .trend-warn { color: #dc2626; }
   .sub-label { font-size: 12px; color: #94a3b8; font-weight: 600; }
 
-  .monitor-content-grid { display: grid; grid-template-columns: 3fr 1fr; gap: 24px; }
-  @media (max-width: 1200px) { .monitor-content-grid { grid-template-columns: 1fr; } }
-
   .status-section { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
   .section-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
   .section-title-row h3 { margin: 0; font-size: 16px; font-weight: 700; }
@@ -228,7 +225,8 @@ const styles = `
   .side-alarm-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
   .alarm-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; }
   .alarm-badge { background: #fee2e2; color: #dc2626; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; }
-  .alarm-list { display: flex; flex-direction: column; gap: 12px; }
+  .alarm-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 900px) { .alarm-list { grid-template-columns: 1fr; } }
   .alarm-item { padding: 14px; border-radius: 8px; border-left: 4px solid transparent; }
   .alarm-red { background: #fff5f5; border-left-color: #ef4444; }
   .alarm-yellow { background: #fffbeb; border-left-color: #f59e0b; }
@@ -413,7 +411,7 @@ function ProductionPage() {
       img: employee.img
     });
 
-    setLinesData(updatedLineDetails);frontend
+    setLinesData(updatedLineDetails);
 
     setEmployees(employees.map(emp => 
       emp.id === employee.id ? { ...emp, assignedLine: targetLine } : emp
@@ -462,63 +460,32 @@ function ProductionPage() {
             </div>
           </div>
 
-          <div className="monitor-content-grid">
-            <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-              <div className="status-section">
-                <div className="section-title-row">
-                  <h3>실시간 생산 라인 상태</h3>
-                  <span className="view-more-link" onClick={() => goToDetail(selectedLine)}>상세 현황 보기 ❯</span>
-                </div>
-                <div className="lines-grid">
-                  {lineSummaryMain.map((line) => (
-                    <div key={line.key} className="line-status-card" onClick={() => goToDetail(line.key)} style={{ cursor: "pointer", border: line.danger ? "1.5px solid #fca5a5" : undefined }}>
-                      <div className="line-card-header">
-                        <div className="line-name" style={{ color: line.danger ? "#dc2626" : undefined }}>{line.name} <span>{line.series}</span></div>
-                        <span className={`status-tag ${line.statusClass}`}>{line.statusTag}</span>
-                      </div>
-                      <div className="line-progress-info">
-                        <span>목표 달성율</span>
-                        <span style={{ color: line.danger ? "#dc2626" : undefined }}>{line.achieve}%</span>
-                      </div>
-                      <div className="gauge-bg" style={{ background: line.danger ? "#fee2e2" : undefined }}>
-                        <div className="gauge-fill" style={{ width: `${line.achieve}%`, backgroundColor: line.danger ? "#ef4444" : undefined }}></div>
-                      </div>
-                      <div className="operator-info">
-                        <div className="operator-avatar" style={line.danger ? { background: "#fca5a5", color: "#b91c1c" } : undefined}>{line.operatorInitial}</div>
-                        <span>{line.operatorName}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+            <div className="status-section">
+              <div className="section-title-row">
+                <h3>실시간 생산 라인 상태</h3>
+                <span className="view-more-link" onClick={() => goToDetail(selectedLine)}>상세 현황 보기 ❯</span>
               </div>
-
-              <div className="table-container">
-                <div className="table-header-row">
-                  <h3>진행 중인 작업 지시 현황</h3>
-                  <input type="text" placeholder="검색..." className="search-box" />
-                </div>
-                <table className="monitoring-table">
-                  <thead>
-                    <tr><th>지시 번호</th><th>품목명</th><th>목표 수량</th><th>현재 생산</th><th>진척률</th><th>우선순위</th></tr>
-                  </thead>
-                  <tbody>
-                    {activeOrders.map((order) => (
-                      <tr key={order.id}>
-                        <td className="wo-num">{order.id}</td>
-                        <td className="wo-product">{order.product}</td>
-                        <td>{order.target.toLocaleString()} EA</td>
-                        <td>{order.current.toLocaleString()} EA</td>
-                        <td>
-                          <div className="progress-wrapper">
-                            <div className="progress-bar-bg"><div className="progress-bar-fill" style={{ width: `${order.progress}%` }}></div></div>
-                            <span className="progress-text">{order.progress}%</span>
-                          </div>
-                        </td>
-                        <td><span className={`priority-badge ${order.priorityClass}`}>{order.priority}</span></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="lines-grid">
+                {lineSummaryMain.map((line) => (
+                  <div key={line.key} className="line-status-card" onClick={() => goToDetail(line.key)} style={{ cursor: "pointer", border: line.danger ? "1.5px solid #fca5a5" : undefined }}>
+                    <div className="line-card-header">
+                      <div className="line-name" style={{ color: line.danger ? "#dc2626" : undefined }}>{line.name} <span>{line.series}</span></div>
+                      <span className={`status-tag ${line.statusClass}`}>{line.statusTag}</span>
+                    </div>
+                    <div className="line-progress-info">
+                      <span>목표 달성율</span>
+                      <span style={{ color: line.danger ? "#dc2626" : undefined }}>{line.achieve}%</span>
+                    </div>
+                    <div className="gauge-bg" style={{ background: line.danger ? "#fee2e2" : undefined }}>
+                      <div className="gauge-fill" style={{ width: `${line.achieve}%`, backgroundColor: line.danger ? "#ef4444" : undefined }}></div>
+                    </div>
+                    <div className="operator-info">
+                      <div className="operator-avatar" style={line.danger ? { background: "#fca5a5", color: "#b91c1c" } : undefined}>{line.operatorInitial}</div>
+                      <span>{line.operatorName}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -536,6 +503,11 @@ function ProductionPage() {
             </div>
           </div>
         </div>
+      ) : view === "lotDetail" ? (
+        <LotDetailView
+        lotData={selectedLot}
+        onBack={() => setView("detail")}
+        />
       ) : (
         <div className="detail-view">
           <div className="detail-top-nav">
@@ -789,5 +761,77 @@ function ProductionPage() {
     </div>
   );
 }
+
+const LotDetailView = ({ lotData, onBack }) => {
+  if (!lotData) return null;
+
+  return (
+    <div className="detail-view">
+      {/* 1. 상단 내비게이션 */}
+      <div className="detail-top-nav">
+        <div className="back-link" onClick={onBack}>⬅ 라인 상세로 돌아가기</div>
+        <div className="nav-path"><span>생산 관리</span> &gt; <span>LOT 상세</span> &gt; <span className="active-path">{lotData.lot}</span></div>
+      </div>
+
+      {/* 2. 헤더 정보 */}
+      <div className="detail-header-row">
+        <div className="detail-title-area">
+          <h2>LOT No. {lotData.lot}</h2>
+          <p>현재 상태: <span className={`status-badge ${lotData.statusClass}`}>{lotData.status}</span></p>
+        </div>
+        <div className="detail-action-buttons">
+          <button className="btn-secondary">🖨️ 성적서 출력</button>
+          <button className="btn-secondary">📊 이력 로그 저장</button>
+        </div>
+      </div>
+
+      {/* 3. 본문 그리드 */}
+      <div className="detail-split-grid">
+        {/* 좌측: 생산 지표 */}
+        <div className="flow-card">
+          <h3>공정 진행 현황</h3>
+          <div style={{ marginTop: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <span>현재 생산량: <strong>{lotData.current} / {lotData.target} EA</strong></span>
+              <span>진척률: {Math.round((lotData.current / lotData.target) * 100)}%</span>
+            </div>
+            <div className="gauge-bg" style={{ height: '16px' }}>
+              <div className="gauge-fill" style={{ width: `${(lotData.current / lotData.target) * 100}%` }}></div>
+            </div>
+            
+            <div style={{ marginTop: '30px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+              <div className="mock-chart">
+                <p>투입 시간</p>
+                <div className="chart-value" style={{ fontSize: '18px' }}>{lotData.start}</div>
+              </div>
+              <div className="mock-chart">
+                <p>예상 종료</p>
+                <div className="chart-value" style={{ fontSize: '18px' }}>{lotData.end}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 우측: 품질 및 특이사항 */}
+        <div className="sensor-card">
+          <h3>품질 및 특이사항</h3>
+          <div style={{ marginTop: '16px' }}>
+            <div className="op-item">
+              <span>✅ 품질 검사 결과: </span>
+              <span style={{ fontWeight: '700', color: '#15803d' }}>Pass</span>
+            </div>
+            <div className="op-item" style={{ marginTop: '10px' }}>
+              <span>⚠️ 작업 중지 횟수: </span>
+              <span style={{ fontWeight: '700' }}>0회</span>
+            </div>
+            <div style={{ marginTop: '20px', padding: '12px', background: '#f8fafc', borderRadius: '8px', fontSize: '12px', color: '#64748b' }}>
+              * 본 LOT는 정상적인 생산 사이클을 유지하고 있습니다. 설비 과부하 등의 알람 발생 시 자동으로 본 영역에 로그가 기록됩니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default ProductionPage;
