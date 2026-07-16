@@ -60,12 +60,11 @@ const styles = `
   .status-leave { background: #fef9c3; color: #a16207; }
   .status-retired { background: #f1f5f9; color: #64748b; }
 
-  .btn-menu { background: none; border: none; font-size: 18px; font-weight: 800; color: #64748b; cursor: pointer; padding: 4px 10px; border-radius: 6px; line-height: 1; }
-  .btn-menu:hover { background: #f1f5f9; }
-  .row-menu { position: absolute; right: 16px; top: 42px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); z-index: 10; min-width: 100px; overflow: hidden; }
-  .row-menu-item { padding: 10px 14px; font-size: 12px; font-weight: 600; color: #334155; cursor: pointer; white-space: nowrap; }
-  .row-menu-item:hover { background: #f1f5f9; }
-  .row-menu-item.danger { color: #dc2626; }
+  .row-actions { display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .btn-icon-action { background: none; border: 1px solid #e2e8f0; font-size: 13px; cursor: pointer; padding: 6px 8px; border-radius: 6px; line-height: 1; color: #475569; }
+  .btn-icon-action:hover { background: #f1f5f9; }
+  .btn-icon-action.danger { color: #dc2626; border-color: #fecaca; }
+  .btn-icon-action.danger:hover { background: #fee2e2; }
 
   .empty-row td { text-align: center; padding: 40px; color: #94a3b8; font-size: 13px; }
 
@@ -89,7 +88,6 @@ function AdminEmployeePage() {
   const [employees, setEmployees] = useState(initialEmployees);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIds, setSelectedIds] = useState([]);
-  const [openMenuId, setOpenMenuId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState("add");
   const [form, setForm] = useState(emptyForm);
@@ -123,7 +121,6 @@ function AdminEmployeePage() {
   const handleRefresh = () => {
     setSearchTerm("");
     setSelectedIds([]);
-    setOpenMenuId(null);
   };
 
   const openAddModal = () => {
@@ -135,7 +132,6 @@ function AdminEmployeePage() {
   const openEditModal = (emp) => {
     setModalMode("edit");
     setForm({ ...emp });
-    setOpenMenuId(null);
     setShowModal(true);
   };
 
@@ -180,7 +176,6 @@ function AdminEmployeePage() {
       setEmployees(employees.filter((emp) => emp.id !== id));
       setSelectedIds(selectedIds.filter((v) => v !== id));
     }
-    setOpenMenuId(null);
   };
 
   const handleBulkDelete = () => {
@@ -192,7 +187,7 @@ function AdminEmployeePage() {
   };
 
   return (
-    <div className="admin-container" onClick={() => setOpenMenuId(null)}>
+    <div className="admin-container">
       <style>{styles}</style>
 
       <div className="admin-header-row">
@@ -264,22 +259,23 @@ function AdminEmployeePage() {
                   <span className={`status-badge ${STATUS_CLASS[emp.status]}`}>{emp.status}</span>
                 </td>
                 <td>{emp.line}</td>
-                <td style={{ textAlign: "center", position: "relative" }}>
-                  <button
-                    className="btn-menu"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setOpenMenuId(openMenuId === emp.id ? null : emp.id);
-                    }}
-                  >
-                    ⋯
-                  </button>
-                  {openMenuId === emp.id && (
-                    <div className="row-menu">
-                      <div className="row-menu-item" onClick={() => openEditModal(emp)}>✏️ 수정</div>
-                      <div className="row-menu-item danger" onClick={() => handleDelete(emp.id)}>🗑 삭제</div>
-                    </div>
-                  )}
+                <td style={{ textAlign: "center" }}>
+                  <div className="row-actions">
+                    <button
+                      className="btn-icon-action"
+                      title="수정"
+                      onClick={() => openEditModal(emp)}
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      className="btn-icon-action danger"
+                      title="삭제"
+                      onClick={() => handleDelete(emp.id)}
+                    >
+                      🗑
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
