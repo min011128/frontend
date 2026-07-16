@@ -7,7 +7,8 @@ import MaterialPage from "./pages/MaterialPage";
 import LoginPage from "./pages/LoginPage";
 import QualityPage from "./pages/QualityPage";
 import AdminEmployeePage from "./pages/AdminEmployeePage";
-import MyPage from "./pages/AdminProfilePage"; 
+import MyPage from "./pages/MyPage";
+import AdminProfilePage from "./pages/AdminProfilePage";
 import MasterDataPage from "./pages/MasterDataPage";
 import WorkOrderPage from "./pages/WorkOrderPage";
 import EmployeeDashboardPage from "./pages/EmployeeDashboardPage";
@@ -92,8 +93,11 @@ function App() {
 
           <Route path="/quality" element={<QualityPage />} />
           
-          {/* 💡 깔끔하게 인증 보호 레이아웃 내부로 합쳐진 마이페이지 */}
-          <Route path="/mypage" element={<MyPage />} />
+          {/* 💡 마이페이지: 관리자/사원 역할에 따라 다른 컴포넌트 렌더링 */}
+          <Route
+            path="/mypage"
+            element={userRole === "admin" ? <AdminProfilePage /> : <MyPage />}
+          />
 
           {/* 관리자 전용 사원관리 페이지 */}
           <Route 

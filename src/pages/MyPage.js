@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-function AdminProfilePage() {
+function MyPage() {
   // 💡 로컬스토리지에서 로그인된 유저의 사원번호와 이름을 가져옵니다.
   const [empId, setEmpId] = useState("");
 
@@ -18,8 +18,8 @@ function AdminProfilePage() {
 
   useEffect(() => {
     // 실제 프로젝트 환경에 맞게 로컬스토리지 키 이름을 맞춰주세요.
-    const savedId = localStorage.getItem("userId") || localStorage.getItem("userEmpId") || "admin";
-    const savedName = localStorage.getItem("userName") || "관리자";
+    const savedId = localStorage.getItem("userId") || localStorage.getItem("userEmpId") || "user";
+    const savedName = localStorage.getItem("userName") || "김철수";
     const savedEmail = localStorage.getItem("userEmail") || "";
     const savedPhone = localStorage.getItem("userPhone") || "";
     setEmpId(savedId);
@@ -102,7 +102,7 @@ function AdminProfilePage() {
 
       <div className="mypage-container">
         <div className="mypage-title-area">
-          <h2>관리자 프로필 관리</h2>
+          <h2>내 정보 관리</h2>
           <p>프로필 정보를 수정하고, 보안을 위해 비밀번호를 주기적으로 변경해 주세요.</p>
         </div>
 
@@ -204,4 +204,4 @@ function AdminProfilePage() {
   );
 }
 
-export default AdminProfilePage;
+export default MyPage;
