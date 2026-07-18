@@ -7,6 +7,7 @@ import MaterialPage from "./pages/MaterialPage";
 import LoginPage from "./pages/LoginPage";
 import QualityPage from "./pages/QualityPage";
 import AdminEmployeePage from "./pages/AdminEmployeePage";
+import AdminNoticeEditor from "./pages/AdminNoticeEditor";
 import MyPage from "./pages/MyPage";
 import AdminProfilePage from "./pages/AdminProfilePage";
 import MasterDataPage from "./pages/MasterDataPage";
@@ -105,6 +106,18 @@ function App() {
             element={
               userRole === "admin" ? (
                 <AdminEmployeePage />
+              ) : (
+                <Navigate to="/dashboard" replace />
+              )
+            } 
+          />
+
+          {/* 💡 관리자 전용 공지 작성 페이지 */}
+          <Route 
+            path="/admin/notices" 
+            element={
+              userRole === "admin" ? (
+                <AdminNoticeEditor />
               ) : (
                 <Navigate to="/dashboard" replace />
               )

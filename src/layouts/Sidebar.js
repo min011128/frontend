@@ -52,6 +52,14 @@ function Sidebar() {
           <span>품질 관리</span>
         </Link>
 
+        {/* 💡 공지 작성 (관리자 전용) */}
+        {userRole === "admin" && (
+          <Link to="/admin/notices" className={`nav-item ${location.pathname === "/admin/notices" ? "active" : ""}`}>
+            <span className="material-symbols-outlined">campaign</span>
+            <span>공지 작성</span>
+          </Link>
+        )}
+
         {/* 💡 내 정보 관리 메뉴 (모든 사원 공통) */}
         <Link to="/mypage" className={`nav-item ${location.pathname === "/mypage" ? "active" : ""}`}>
           <span className="material-symbols-outlined">account_circle</span>
