@@ -47,6 +47,12 @@ function Sidebar() {
           <span>생산 모니터링</span>
         </Link>
 
+        {/* 💡 생산 실적 입력 (관리자/사원 공통) */}
+        <Link to="/production-entry" className={`nav-item ${location.pathname === "/production-entry" ? "active" : ""}`}>
+          <span className="material-symbols-outlined">add_task</span>
+          <span>생산 실적 입력</span>
+        </Link>
+
         {/* 💡 품질 검사 입력 (관리자/사원 공통) */}
         <Link to="/quality-inspection" className={`nav-item ${location.pathname === "/quality-inspection" ? "active" : ""}`}>
           <span className="material-symbols-outlined">fact_check</span>

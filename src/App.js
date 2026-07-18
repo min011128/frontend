@@ -7,6 +7,7 @@ import MaterialPage from "./pages/MaterialPage";
 import LoginPage from "./pages/LoginPage";
 import QualityPage from "./pages/QualityPage";
 import QualityInspectionPage from "./pages/QualityInspectionPage";
+import ProductionEntryPage from "./pages/ProductionEntryPage";
 import AdminEmployeePage from "./pages/AdminEmployeePage";
 import AdminNoticeEditor from "./pages/AdminNoticeEditor";
 import NoticeBoardPage from "./pages/NoticeBoardPage";
@@ -81,6 +82,9 @@ function App() {
           <Route path="/production" element={<ProductionPage />} />
           
           <Route path="/material" element={<MaterialPage />} />
+
+          {/* 💡 생산 실적 입력 (관리자/사원 공통) */}
+          <Route path="/production-entry" element={<ProductionEntryPage />} />
 
           {/* 💡 작업지시 (관리자 전용) */}
           <Route 
