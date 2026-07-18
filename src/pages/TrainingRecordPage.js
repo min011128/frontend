@@ -27,6 +27,8 @@ const STATUS_META = {
 function TrainingRecordPage() {
   const [tab, setTab] = useState("training"); // "training" | "cert"
 
+  const isAdmin = localStorage.getItem("userRole") === "admin";
+
   const summary = useMemo(() => {
     const soonCount =
       trainings.filter((t) => t.status === "soon").length +
@@ -100,7 +102,7 @@ function TrainingRecordPage() {
         </div>
       </div>
 
-      {(summary.soonCount > 0 || summary.expiredCount > 0) && (
+      {!isAdmin && (summary.soonCount > 0 || summary.expiredCount > 0) && (
         <div className="tr-notice" style={{ marginBottom: 16 }}>
           ⚠ 만료되었거나 곧 만료되는 항목이 있습니다. 재교육 또는 갱신 일정을 관리자와 확인해주세요.
         </div>
