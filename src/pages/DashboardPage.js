@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 function DashboardPage() {
   const [activeTab] = useState("Overview");
+  const navigate = useNavigate();
   
   // 로그인된 사용자의 권한 상태를 관리합니다. (기본값은 'user' 혹은 'admin')
   // 💡 버튼이 잘 작동하는지 보시려면 이 값을 "admin"으로 설정하여 확인하실 수 있습니다.
@@ -416,6 +418,9 @@ function DashboardPage() {
       text-decoration: none;
       font-weight: bold;
       cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
     }
     .link-more:hover {
       text-decoration: underline;
@@ -778,7 +783,9 @@ function DashboardPage() {
           <div className="section-card">
             <div className="section-card-header">
               <h3>실시간 작업 현황</h3>
-              <span className="link-more">상세 현황 ❯</span>
+              <button type="button" className="link-more" onClick={() => navigate("/production")}>
+                상세 현황 ❯
+              </button>
             </div>
 
             <div className="pipeline-wrapper">
