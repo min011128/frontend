@@ -90,6 +90,12 @@ function Sidebar() {
           <span>내 근태 조회</span>
         </Link>
 
+        {/* 💡 교육/자격 이력 (관리자/사원 공통) */}
+        <Link to="/training-record" className={`nav-item ${location.pathname === "/training-record" ? "active" : ""}`}>
+          <span className="material-symbols-outlined">workspace_premium</span>
+          <span>교육 · 자격 이력</span>
+        </Link>
+
         {/* 💡 내 정보 관리 메뉴 (모든 사원 공통) */}
         <Link to="/mypage" className={`nav-item ${location.pathname === "/mypage" ? "active" : ""}`}>
           <span className="material-symbols-outlined">account_circle</span>
