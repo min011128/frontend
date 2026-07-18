@@ -192,6 +192,8 @@ const styles = `
   .submit-btn:hover { opacity: 0.85; }
   .danger-btn { padding: 12px 16px; background: #fee2e2; color: #dc2626; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px; }
   .danger-btn:hover { background: #fca5a5; }
+
+  .readonly-tag { font-size: 11px; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 4px 10px; border-radius: 12px; }
 `;
 
 function MasterDataPage() {
@@ -199,8 +201,10 @@ function MasterDataPage() {
   const [selectedId, setSelectedId] = useState(initialProducts[0].id);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // ---- 관리자 인증 상태 (현재는 관리자로 로그인된 상태로 시작) ----
-  const [isAdmin] = useState(true);
+  // ---- 관리자 인증 상태: 실제 로그인 권한(localStorage)과 연동 ----
+  // 사원(userRole !== "admin")으로 로그인하면 등록/수정/삭제 버튼이 자동으로 숨겨지고
+  // 제품 사양·BOM 조회는 그대로 가능한 읽기 전용 화면이 됩니다.
+  const isAdmin = localStorage.getItem("userRole") === "admin";
 
   const [showProductModal, setShowProductModal] = useState(false);
   const [productModalMode, setProductModalMode] = useState("add");
@@ -354,8 +358,10 @@ function MasterDataPage() {
         <div className="list-panel">
           <div className="list-panel-header">
             <h3>제품 목록</h3>
-            {isAdmin && (
+            {isAdmin ? (
               <button className="btn-primary" onClick={openAddProductModal}>+ 신규 제품 등록</button>
+            ) : (
+              <span className="readonly-tag">조회 전용</span>
             )}
           </div>
 
@@ -410,7 +416,9 @@ function MasterDataPage() {
                   <p>{selectedProduct.description}</p>
                 </div>
                 <div className="detail-actions">
-                  <button className="btn-outline" onClick={() => alert("스키마를 내보냈습니다. (Mock)")}>⭳ 스키마 내보내기</button>
+                  {isAdmin && (
+                    <button className="btn-outline" onClick={() => alert("스키마를 내보냈습니다. (Mock)")}>⭳ 스키마 내보내기</button>
+                  )}
                   {isAdmin && (
                     <button className="btn-edit" onClick={openEditProductModal}>✎ 정보 수정</button>
                   )}
