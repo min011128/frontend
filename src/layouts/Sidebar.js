@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 function Sidebar() {
@@ -7,8 +7,59 @@ function Sidebar() {
   // 로컬스토리지에서 로그인된 유저의 권한 등급을 가져옵니다.
   const userRole = localStorage.getItem("userRole");
 
+  const isAttendancePath =
+    location.pathname === "/my-attendance" || location.pathname === "/admin/attendance";
+  const [attendanceOpen, setAttendanceOpen] = useState(isAttendancePath);
+
+  const sidebarSubStyles = `
+    .nav-group-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font: inherit;
+      color: inherit;
+    }
+    .nav-group-btn .nav-chevron {
+      margin-left: auto;
+      font-size: 11px;
+      color: #94a3b8;
+      transition: transform 0.15s;
+    }
+    .nav-group-btn .nav-chevron.open {
+      transform: rotate(90deg);
+    }
+    .nav-subitem {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 8px 8px 34px;
+      font-size: 13px;
+      color: #64748b;
+      text-decoration: none;
+    }
+    .nav-subitem::before {
+      content: "·";
+      font-weight: 800;
+      color: #cbd5e1;
+    }
+    .nav-subitem:hover {
+      color: #0566d9;
+    }
+    .nav-subitem.active {
+      color: #0566d9;
+      font-weight: 700;
+    }
+  `;
+
   return (
     <aside className="sidebar">
+      <style>{sidebarSubStyles}</style>
+
       {/* 로고 영역 */}
       <div className="sidebar-brand">
         <h1>Mini MES</h1>
@@ -84,11 +135,28 @@ function Sidebar() {
           <span>공지사항</span>
         </Link>
 
-        {/* 💡 내 근태 조회 (관리자/사원 공통) */}
-        <Link to="/my-attendance" className={`nav-item ${location.pathname === "/my-attendance" ? "active" : ""}`}>
+        {/* 💡 근태 조회 그룹: 내 근태 조회(공통) + 전체 사원 근태 조회(관리자 전용) */}
+        <button
+          type="button"
+          className={`nav-item nav-group-btn ${isAttendancePath ? "active" : ""}`}
+          onClick={() => setAttendanceOpen((v) => !v)}
+        >
           <span className="material-symbols-outlined">calendar_month</span>
-          <span>내 근태 조회</span>
-        </Link>
+          <span>근태 조회</span>
+          <span className={`nav-chevron ${attendanceOpen ? "open" : ""}`}>▶</span>
+        </button>
+        {attendanceOpen && (
+          <>
+            <Link to="/my-attendance" className={`nav-subitem ${location.pathname === "/my-attendance" ? "active" : ""}`}>
+              내 근태 조회
+            </Link>
+            {userRole === "admin" && (
+              <Link to="/admin/attendance" className={`nav-subitem ${location.pathname === "/admin/attendance" ? "active" : ""}`}>
+                전체 사원 근태 조회
+              </Link>
+            )}
+          </>
+        )}
 
         {/* 💡 교육/자격 이력 (관리자/사원 공통) */}
         <Link to="/training-record" className={`nav-item ${location.pathname === "/training-record" ? "active" : ""}`}>

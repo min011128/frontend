@@ -10,6 +10,7 @@ import QualityInspectionPage from "./pages/QualityInspectionPage";
 import ProductionEntryPage from "./pages/ProductionEntryPage";
 import EquipmentIssuePage from "./pages/EquipmentIssuePage";
 import MyAttendancePage from "./pages/MyAttendancePage";
+import AdminAttendancePage from "./pages/AdminAttendancePage";
 import TrainingRecordPage from "./pages/TrainingRecordPage";
 import AdminEmployeePage from "./pages/AdminEmployeePage";
 import AdminNoticeEditor from "./pages/AdminNoticeEditor";
@@ -117,6 +118,18 @@ function App() {
 
           {/* 💡 내 근태 조회 (관리자/사원 공통) */}
           <Route path="/my-attendance" element={<MyAttendancePage />} />
+
+          {/* 💡 전체 사원 근태 조회 (관리자 전용) */}
+          <Route 
+            path="/admin/attendance" 
+            element={
+              userRole === "admin" ? (
+                <AdminAttendancePage />
+              ) : (
+                <Navigate to="/dashboard" replace />
+              )
+            } 
+          />
 
           {/* 💡 교육/자격 이력 (관리자/사원 공통) */}
           <Route path="/training-record" element={<TrainingRecordPage />} />
