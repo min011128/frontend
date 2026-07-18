@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { pushNotification } from "../utils/notificationBus";
 
 const styles = `
 .ane-page {
@@ -532,6 +533,16 @@ export default function AdminNoticeEditor() {
 
     setPublishedFlash(true);
     setTimeout(() => setPublishedFlash(false), 1400);
+
+    // 필독·경고 공지는 사원 전체에게 실시간 알림으로도 전달합니다.
+    if (type === "warn") {
+      pushNotification({
+        targetRole: "employee",
+        type: "warn",
+        title: `필독 ${title}`,
+        desc: body || "새로운 필독 공지가 등록되었습니다.",
+      });
+    }
   }
 
   function deletePost(idx) {

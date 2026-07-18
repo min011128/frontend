@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { pushNotification } from "../utils/notificationBus";
 
 // -------------------------------------------------------------
 // [데이터 정의]
@@ -96,6 +97,14 @@ function EquipmentIssuePage() {
     setHistory((prev) => [record, ...prev]);
     setFlash(true);
     setTimeout(() => setFlash(false), 1600);
+
+    // 관리자에게는 신고 접수로, 같은 라인 사원들에게는 설비 이상 알림으로 동시에 전달
+    pushNotification({
+      targetRole: "both",
+      type: severity === "urgent" ? "error" : severity === "mid" ? "warn" : "info",
+      title: `${severity === "urgent" ? "긴급" : "설비"} ${issueType}`,
+      desc: `${equipmentName} · ${note}`,
+    });
 
     if (severity === "urgent") {
       alert("긴급 신고가 접수되었습니다. 관리자에게 즉시 알림이 전송됩니다.");

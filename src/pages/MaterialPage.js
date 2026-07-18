@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import MesApi from "../api/MesApi";
+import { pushNotification } from "../utils/notificationBus";
 
 function MaterialPage() {
   const [materials, setMaterials] = useState([]);
@@ -130,6 +131,15 @@ function MaterialPage() {
     }
     // TODO: 백엔드 API 연동 (자재 요청 접수)
     console.log("자재 요청:", requestForm);
+
+    // 관리자에게 실시간 알림 전달 (Header 알림 종에 표시됨)
+    pushNotification({
+      targetRole: "admin",
+      type: "info",
+      title: `자재 요청 · ${requestForm.name || requestForm.code}`,
+      desc: `요청 수량 ${requestForm.amount}개${requestForm.reason ? ` · 사유: ${requestForm.reason}` : ""}`,
+    });
+
     alert(`📩 ${requestForm.name} ${requestForm.amount}개 요청이 관리자에게 전달되었습니다.`);
     setRequestForm({ code: "", name: "", amount: "", reason: "" });
     setShowRequestModal(false);

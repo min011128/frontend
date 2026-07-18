@@ -1,44 +1,98 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 // 1. 페이지 이동을 위해 react-router-dom의 useNavigate 훅을 가져옵니다.
 import { useNavigate } from "react-router-dom";
+import { getNotifications, subscribeNotifications, markSeen, getLastSeen } from "../utils/notificationBus";
 
-// 샘플 알림 데이터
-const notificationData = [
+// 최초 1회, 저장된 알림이 없을 때 채워 넣을 샘플 데이터
+// (관리자/사원 공통으로 보이는 일반 시스템 알림)
+const seedNotifications = [
   {
-    id: 1,
+    id: "seed-1",
+    targetRole: "both",
     type: "info",
     title: "정보 SPC2001",
     desc: "SPC 알람 (Stream-A), 파라미터: Sigma+0.5",
     time: "14:40:12",
+    createdAt: Date.now() - 1000 * 60 * 30,
   },
   {
-    id: 2,
+    id: "seed-2",
+    targetRole: "both",
     type: "warn",
     title: "경고 SPC0032",
     desc: "라인 B 피드 속도 편차 감지됨",
     time: "14:38:05",
+    createdAt: Date.now() - 1000 * 60 * 32,
   },
   {
-    id: 3,
+    id: "seed-3",
+    targetRole: "both",
     type: "error",
     title: "오류 ALM1020",
     desc: "레이저 용접 헤드 #4 과열 (92°C)",
     time: "14:35:59",
+    createdAt: Date.now() - 1000 * 60 * 35,
   },
   {
-    id: 4,
+    id: "seed-4",
+    targetRole: "both",
     type: "info",
     title: "정보 COM01",
     desc: "교대 근무 시작: C팀 가동 중",
     time: "14:00:00",
+    createdAt: Date.now() - 1000 * 60 * 70,
   },
 ];
 
+function ensureSeeded() {
+  const existing = getNotifications();
+  if (existing.length === 0) {
+    localStorage.setItem("mes_notifications", JSON.stringify(seedNotifications));
+  }
+}
+
 const Header = ({ currentTime, onLogout }) => {
   const [isNotifyOpen, setIsNotifyOpen] = useState(false);
-  
-  // 2. 페이지 이동을 위한 navigate 함수 선언
+  const [allNotifications, setAllNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+
   const navigate = useNavigate();
+  const userRole = localStorage.getItem("userRole") === "admin" ? "admin" : "employee";
+
+  // 역할에 맞는 알림만 필터링
+  // - 관리자: 사원이 올린 신고(설비 이상 등) + 공통 시스템 알림
+  // - 사원: 관리자의 긴급 공지 + 설비 이상 알림 + 공통 시스템 알림
+  const visibleNotifications = useMemo(() => {
+    return allNotifications
+      .filter((n) => n.targetRole === "both" || n.targetRole === userRole)
+      .sort((a, b) => b.createdAt - a.createdAt);
+  }, [allNotifications, userRole]);
+
+  useEffect(() => {
+    ensureSeeded();
+    setAllNotifications(getNotifications());
+
+    const unsubscribe = subscribeNotifications((list) => {
+      setAllNotifications(list);
+    });
+    return unsubscribe;
+  }, []);
+
+  // 안 읽은 알림 개수 계산 (마지막으로 드롭다운을 연 시점 이후 도착한 알림)
+  useEffect(() => {
+    const lastSeen = getLastSeen(userRole);
+    const count = visibleNotifications.filter((n) => n.createdAt > lastSeen).length;
+    setUnreadCount(count);
+  }, [visibleNotifications, userRole]);
+
+  const handleToggleNotify = () => {
+    const next = !isNotifyOpen;
+    setIsNotifyOpen(next);
+    if (next) {
+      markSeen(userRole);
+      setUnreadCount(0);
+    }
+  };
 
   const handleLogout = () => {
     // 세션 정보나 로컬스토리지 토큰 삭제 등 로그아웃 처리
@@ -75,32 +129,38 @@ const Header = ({ currentTime, onLogout }) => {
           {/* 알림 토글 버튼 */}
           <button
             type="button"
-            onClick={() => setIsNotifyOpen(!isNotifyOpen)}
+            onClick={handleToggleNotify}
             style={{ position: "relative", background: "none", border: "none", cursor: "pointer", padding: "4px" }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: "24px", color: "#475569" }}>
               notifications
             </span>
-            <span className="notification-badge"></span>
+            {unreadCount > 0 && <span className="notification-badge"></span>}
           </button>
 
           {/* 알림 드롭다운 창 */}
           {isNotifyOpen && (
             <div className="noti-dropdown custom-scrollbar">
               <div className="noti-header">
-                <span>시스템 알림</span>
-                <span className="noti-count">{notificationData.length}건</span>
+                <span>{userRole === "admin" ? "사원 알림" : "관리자·설비 알림"}</span>
+                <span className="noti-count">{visibleNotifications.length}건</span>
               </div>
               <div className="noti-list">
-                {notificationData.map((item) => (
-                  <div key={item.id} className={`noti-item ${item.type}`}>
-                    <div className="noti-item-header">
-                      <span className="noti-title">{item.title}</span>
-                      <span className="noti-time">{item.time}</span>
-                    </div>
-                    <p className="noti-desc">{item.desc}</p>
+                {visibleNotifications.length === 0 ? (
+                  <div style={{ padding: "24px 12px", textAlign: "center", fontSize: "12.5px", color: "#94a3b8" }}>
+                    새로운 알림이 없습니다.
                   </div>
-                ))}
+                ) : (
+                  visibleNotifications.map((item) => (
+                    <div key={item.id} className={`noti-item ${item.type}`}>
+                      <div className="noti-item-header">
+                        <span className="noti-title">{item.title}</span>
+                        <span className="noti-time">{item.time}</span>
+                      </div>
+                      <p className="noti-desc">{item.desc}</p>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}
