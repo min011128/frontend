@@ -302,8 +302,9 @@ function EmployeeDashboardPage() {
           <div className="section-card">
             <div className="section-card-header">
               <h3>📢 관리자 공지</h3>
+              <button className="link-more" onClick={() => navigate("/notices")}>전체 보기 ❯</button>
             </div>
-            {notices.map((n) => (
+            {notices.slice(0, 2).map((n) => (
               <div key={n.id} className={`alert-box ${n.urgent ? "alert-red" : "alert-blue"}`}>
                 <div className="alert-box-icon">{n.icon}</div>
                 <div className="alert-box-content">

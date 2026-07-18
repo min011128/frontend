@@ -60,6 +60,12 @@ function Sidebar() {
           </Link>
         )}
 
+        {/* 💡 공지사항 전체보기 (관리자/사원 공통) */}
+        <Link to="/notices" className={`nav-item ${location.pathname === "/notices" ? "active" : ""}`}>
+          <span className="material-symbols-outlined">notifications</span>
+          <span>공지사항</span>
+        </Link>
+
         {/* 💡 내 정보 관리 메뉴 (모든 사원 공통) */}
         <Link to="/mypage" className={`nav-item ${location.pathname === "/mypage" ? "active" : ""}`}>
           <span className="material-symbols-outlined">account_circle</span>

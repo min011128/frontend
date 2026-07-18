@@ -8,6 +8,7 @@ import LoginPage from "./pages/LoginPage";
 import QualityPage from "./pages/QualityPage";
 import AdminEmployeePage from "./pages/AdminEmployeePage";
 import AdminNoticeEditor from "./pages/AdminNoticeEditor";
+import NoticeBoardPage from "./pages/NoticeBoardPage";
 import MyPage from "./pages/MyPage";
 import AdminProfilePage from "./pages/AdminProfilePage";
 import MasterDataPage from "./pages/MasterDataPage";
@@ -123,6 +124,9 @@ function App() {
               )
             } 
           />
+
+          {/* 💡 공지사항 전체보기 (관리자/사원 공통) */}
+          <Route path="/notices" element={<NoticeBoardPage />} />
         </Route>
 
         {/* 4. 잘못된 경로(404) 예외 처리 */}
