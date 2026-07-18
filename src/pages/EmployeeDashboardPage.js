@@ -286,54 +286,36 @@ function EmployeeDashboardPage() {
         </div>
       </div>
 
-      {/* 작업 지시서 + (공지 / 인수인계) */}
+      {/* 작업 지시서 + 교대 인수인계 (왼쪽) / 관리자 공지 (오른쪽) */}
       <div className="main-grid">
-        <div className="section-card wo-table-card">
-          <div className="section-card-header" style={{ padding: "16px 16px 0" }}>
-            <h3>배정된 작업 지시서 (Work Orders)</h3>
-            <button className="link-more" onClick={() => navigate("/production")}>전체 보기 ❯</button>
-          </div>
-          <table className="wo-table">
-            <thead>
-              <tr>
-                <th>지시 번호 (ID)</th>
-                <th>제품명 (PRODUCT)</th>
-                <th>수량 (QTY)</th>
-                <th>기한 (DUE)</th>
-                <th>상태 (STATUS)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {workOrders.map((wo) => (
-                <tr key={wo.id}>
-                  <td className="wo-id">{wo.id}</td>
-                  <td>{wo.product}</td>
-                  <td>{wo.current} / {wo.target}</td>
-                  <td>{wo.due}</td>
-                  <td><span className={`status-badge ${STATUS_STYLE[wo.status].badge}`}>{STATUS_STYLE[wo.status].label}</span></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
         <div>
-          {/* 관리자 공지 */}
-          <div className="section-card">
-            <div className="section-card-header">
-              <h3>📢 관리자 공지</h3>
-              <button className="link-more" onClick={() => navigate("/notices")}>전체 보기 ❯</button>
+          <div className="section-card wo-table-card">
+            <div className="section-card-header" style={{ padding: "16px 16px 0" }}>
+              <h3>배정된 작업 지시서 (Work Orders)</h3>
+              <button className="link-more" onClick={() => navigate("/production")}>전체 보기 ❯</button>
             </div>
-            {notices.slice(0, 2).map((n) => (
-              <div key={n.id} className={`alert-box ${n.urgent ? "alert-red" : "alert-blue"}`}>
-                <div className="alert-box-icon">{n.icon}</div>
-                <div className="alert-box-content">
-                  <div className="alert-box-title">{n.title}</div>
-                  <div className="alert-box-desc">{n.desc}</div>
-                  <div className="alert-box-footer">{n.footer}</div>
-                </div>
-              </div>
-            ))}
+            <table className="wo-table">
+              <thead>
+                <tr>
+                  <th>지시 번호 (ID)</th>
+                  <th>제품명 (PRODUCT)</th>
+                  <th>수량 (QTY)</th>
+                  <th>기한 (DUE)</th>
+                  <th>상태 (STATUS)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {workOrders.map((wo) => (
+                  <tr key={wo.id}>
+                    <td className="wo-id">{wo.id}</td>
+                    <td>{wo.product}</td>
+                    <td>{wo.current} / {wo.target}</td>
+                    <td>{wo.due}</td>
+                    <td><span className={`status-badge ${STATUS_STYLE[wo.status].badge}`}>{STATUS_STYLE[wo.status].label}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
           {/* 교대 인수인계 */}
@@ -368,6 +350,24 @@ function EmployeeDashboardPage() {
               )}
             </div>
           </div>
+        </div>
+
+        {/* 관리자 공지 */}
+        <div className="section-card" style={{ marginBottom: 0 }}>
+          <div className="section-card-header">
+            <h3>📢 관리자 공지</h3>
+            <button className="link-more" onClick={() => navigate("/notices")}>전체 보기 ❯</button>
+          </div>
+          {notices.slice(0, 2).map((n) => (
+            <div key={n.id} className={`alert-box ${n.urgent ? "alert-red" : "alert-blue"}`}>
+              <div className="alert-box-icon">{n.icon}</div>
+              <div className="alert-box-content">
+                <div className="alert-box-title">{n.title}</div>
+                <div className="alert-box-desc">{n.desc}</div>
+                <div className="alert-box-footer">{n.footer}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
