@@ -84,6 +84,12 @@ function Sidebar() {
           <span>공지사항</span>
         </Link>
 
+        {/* 💡 내 근태 조회 (관리자/사원 공통) */}
+        <Link to="/my-attendance" className={`nav-item ${location.pathname === "/my-attendance" ? "active" : ""}`}>
+          <span className="material-symbols-outlined">calendar_month</span>
+          <span>내 근태 조회</span>
+        </Link>
+
         {/* 💡 내 정보 관리 메뉴 (모든 사원 공통) */}
         <Link to="/mypage" className={`nav-item ${location.pathname === "/mypage" ? "active" : ""}`}>
           <span className="material-symbols-outlined">account_circle</span>

@@ -9,6 +9,7 @@ import QualityPage from "./pages/QualityPage";
 import QualityInspectionPage from "./pages/QualityInspectionPage";
 import ProductionEntryPage from "./pages/ProductionEntryPage";
 import EquipmentIssuePage from "./pages/EquipmentIssuePage";
+import MyAttendancePage from "./pages/MyAttendancePage";
 import AdminEmployeePage from "./pages/AdminEmployeePage";
 import AdminNoticeEditor from "./pages/AdminNoticeEditor";
 import NoticeBoardPage from "./pages/NoticeBoardPage";
@@ -112,6 +113,9 @@ function App() {
             path="/mypage"
             element={userRole === "admin" ? <AdminProfilePage /> : <MyPage />}
           />
+
+          {/* 💡 내 근태 조회 (관리자/사원 공통) */}
+          <Route path="/my-attendance" element={<MyAttendancePage />} />
 
           {/* 관리자 전용 사원관리 페이지 */}
           <Route 
