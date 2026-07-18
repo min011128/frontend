@@ -9,6 +9,7 @@ import QualityPage from "./pages/QualityPage";
 import QualityInspectionPage from "./pages/QualityInspectionPage";
 import ProductionEntryPage from "./pages/ProductionEntryPage";
 import EquipmentIssuePage from "./pages/EquipmentIssuePage";
+import AdminEquipmentIssuePage from "./pages/AdminEquipmentIssuePage";
 import MyAttendancePage from "./pages/MyAttendancePage";
 import AdminAttendancePage from "./pages/AdminAttendancePage";
 import TrainingRecordPage from "./pages/TrainingRecordPage";
@@ -92,6 +93,18 @@ function App() {
 
           {/* 💡 설비 이상 신고 (관리자/사원 공통) */}
           <Route path="/equipment-issue" element={<EquipmentIssuePage />} />
+
+          {/* 💡 설비 이상 신고 관리 (관리자 전용) */}
+          <Route 
+            path="/admin/equipment-issues" 
+            element={
+              userRole === "admin" ? (
+                <AdminEquipmentIssuePage />
+              ) : (
+                <Navigate to="/dashboard" replace />
+              )
+            } 
+          />
 
           {/* 💡 작업지시 (관리자 전용) */}
           <Route 

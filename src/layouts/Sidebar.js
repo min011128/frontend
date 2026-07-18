@@ -11,6 +11,10 @@ function Sidebar() {
     location.pathname === "/my-attendance" || location.pathname === "/admin/attendance";
   const [attendanceOpen, setAttendanceOpen] = useState(isAttendancePath);
 
+  const isEquipmentPath =
+    location.pathname === "/equipment-issue" || location.pathname === "/admin/equipment-issues";
+  const [equipmentOpen, setEquipmentOpen] = useState(isEquipmentPath);
+
   const sidebarSubStyles = `
     .nav-group-btn {
       display: flex;
@@ -104,11 +108,28 @@ function Sidebar() {
           <span>생산 실적 입력</span>
         </Link>
 
-        {/* 💡 설비 이상 신고 (관리자/사원 공통) */}
-        <Link to="/equipment-issue" className={`nav-item ${location.pathname === "/equipment-issue" ? "active" : ""}`}>
+        {/* 💡 설비 이상 신고 그룹: 이상 신고 작성(공통) + 이상 신고 관리(관리자 전용) */}
+        <button
+          type="button"
+          className={`nav-item nav-group-btn ${isEquipmentPath ? "active" : ""}`}
+          onClick={() => setEquipmentOpen((v) => !v)}
+        >
           <span className="material-symbols-outlined">build_circle</span>
           <span>설비 이상 신고</span>
-        </Link>
+          <span className={`nav-chevron ${equipmentOpen ? "open" : ""}`}>▶</span>
+        </button>
+        {equipmentOpen && (
+          <>
+            <Link to="/equipment-issue" className={`nav-subitem ${location.pathname === "/equipment-issue" ? "active" : ""}`}>
+              이상 신고 작성
+            </Link>
+            {userRole === "admin" && (
+              <Link to="/admin/equipment-issues" className={`nav-subitem ${location.pathname === "/admin/equipment-issues" ? "active" : ""}`}>
+                이상 신고 관리
+              </Link>
+            )}
+          </>
+        )}
 
         {/* 💡 품질 검사 입력 (관리자/사원 공통) */}
         <Link to="/quality-inspection" className={`nav-item ${location.pathname === "/quality-inspection" ? "active" : ""}`}>

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { pushNotification } from "../utils/notificationBus";
+import { getIssues, addIssue, subscribeIssues } from "../utils/equipmentIssueStore";
 
 // -------------------------------------------------------------
 // [데이터 정의]
@@ -20,27 +21,6 @@ const SEVERITY = [
   { key: "urgent", label: "긴급", desc: "즉시 라인 정지 필요" },
 ];
 
-const initialHistory = [
-  {
-    id: 1,
-    equipment: "레진 주입기 (S-04)",
-    issueType: "온도 이상",
-    severity: "mid",
-    note: "히터 온도가 설정값보다 5도 낮게 유지됨.",
-    time: "어제 16:20",
-    status: "resolved",
-  },
-  {
-    id: 2,
-    equipment: "권선기 (S-01)",
-    issueType: "이상 소음·진동",
-    severity: "low",
-    note: "가동 시 미세한 떨림 소음 발생.",
-    time: "3일 전 09:40",
-    status: "resolved",
-  },
-];
-
 const SEVERITY_STYLE = {
   low: { label: "낮음", cls: "es-sev-low" },
   mid: { label: "보통", cls: "es-sev-mid" },
@@ -53,11 +33,6 @@ const STATUS_STYLE = {
   resolved: { label: "해결됨", cls: "es-status-resolved" },
 };
 
-function nowLabel() {
-  const d = new Date();
-  return `방금 · ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-}
-
 function EquipmentIssuePage() {
   const [equipment, setEquipment] = useState(EQUIPMENT_LIST[0].id);
   const [issueType, setIssueType] = useState(ISSUE_TYPES[0]);
@@ -65,8 +40,20 @@ function EquipmentIssuePage() {
   const [note, setNote] = useState("");
   const [photo, setPhoto] = useState(null);
 
-  const [history, setHistory] = useState(initialHistory);
+  // 더미: 실제 로그인 연동 전이라 신고자명은 고정값을 사용합니다.
+  const reporterName = "김철수";
+
+  const [history, setHistory] = useState([]);
   const [flash, setFlash] = useState(false);
+
+  useEffect(() => {
+    setHistory(getIssues());
+    const unsubscribe = subscribeIssues(setHistory);
+    return unsubscribe;
+  }, []);
+
+  // "내 신고 이력"은 현재 로그인한 사원이 남긴 신고만 보여줍니다.
+  const myHistory = history.filter((h) => h.reporter === reporterName);
 
   function resetForm() {
     setEquipment(EQUIPMENT_LIST[0].id);
@@ -83,18 +70,15 @@ function EquipmentIssuePage() {
     }
     const equipmentName = EQUIPMENT_LIST.find((e) => e.id === equipment)?.name || equipment;
 
-    const record = {
-      id: Date.now(),
+    addIssue({
       equipment: equipmentName,
       issueType,
       severity,
       note,
       photoName: photo ? photo.name : null,
-      time: nowLabel(),
-      status: "received",
-    };
+      reporter: reporterName,
+    });
 
-    setHistory((prev) => [record, ...prev]);
     setFlash(true);
     setTimeout(() => setFlash(false), 1600);
 
@@ -261,11 +245,11 @@ function EquipmentIssuePage() {
 
         {/* 우측: 신고 이력 */}
         <div className="es-card">
-          <div className="es-card-title">내 신고 이력 ({history.length}건)</div>
-          {history.length === 0 ? (
+          <div className="es-card-title">내 신고 이력 ({myHistory.length}건)</div>
+          {myHistory.length === 0 ? (
             <div className="es-history-empty">아직 신고한 내역이 없습니다.</div>
           ) : (
-            history.map((h) => (
+            myHistory.map((h) => (
               <div key={h.id} className="es-history-item">
                 <div className="es-history-top">
                   <span className="es-history-eq">{h.equipment}</span>

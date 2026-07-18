@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { pushNotification } from "../utils/notificationBus";
 
 // -------------------------------------------------------------
 // [데이터 정의] 더미 작업지시 데이터
@@ -102,6 +103,15 @@ function ProductionEntryPage() {
       { id: Date.now(), type: "stop", reason: stopReason, note: stopNote, woId: selectedId, time: nowTime() },
       ...prev,
     ]);
+
+    // 관리자에게 실시간 알림 전달 (Header 알림 종에 표시됨)
+    pushNotification({
+      targetRole: "admin",
+      type: "warn",
+      title: `라인 중단 신고 · ${selectedId}`,
+      desc: `${stopReason}${stopNote ? ` · ${stopNote}` : ""}`,
+    });
+
     setStopNote("");
     setShowStopForm(false);
     alert("중단 사유가 기록되었습니다. 관리자에게 알림이 전송됩니다.");
