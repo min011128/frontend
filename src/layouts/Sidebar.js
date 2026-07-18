@@ -53,6 +53,12 @@ function Sidebar() {
           <span>생산 실적 입력</span>
         </Link>
 
+        {/* 💡 설비 이상 신고 (관리자/사원 공통) */}
+        <Link to="/equipment-issue" className={`nav-item ${location.pathname === "/equipment-issue" ? "active" : ""}`}>
+          <span className="material-symbols-outlined">build_circle</span>
+          <span>설비 이상 신고</span>
+        </Link>
+
         {/* 💡 품질 검사 입력 (관리자/사원 공통) */}
         <Link to="/quality-inspection" className={`nav-item ${location.pathname === "/quality-inspection" ? "active" : ""}`}>
           <span className="material-symbols-outlined">fact_check</span>
