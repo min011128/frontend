@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getHandovers, saveHandover, subscribeHandovers } from "../utils/handoverStore";
 
 // -------------------------------------------------------------
 // [데이터 정의] 더미 데이터
@@ -186,6 +187,16 @@ const styles = `
     outline: none; resize: vertical; margin-bottom: 12px; transition: border 0.15s;
   }
   .handover-textarea:focus { border-color: #02639a; }
+
+  .handover-history { margin-top: 16px; padding-top: 14px; border-top: 1px solid #e2e8f0; }
+  .handover-history-title { font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 10px; }
+  .handover-empty { font-size: 12.5px; color: #94a3b8; text-align: center; padding: 16px 0; }
+  .handover-item { padding: 10px 0; border-top: 1px solid #f1f5f9; }
+  .handover-item:first-child { border-top: none; }
+  .handover-item-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .handover-writer { font-size: 12.5px; font-weight: 700; color: #1e293b; }
+  .handover-time { font-size: 11px; color: #94a3b8; }
+  .handover-note { font-size: 12.5px; color: #475569; line-height: 1.5; white-space: pre-wrap; }
 `;
 
 function EmployeeDashboardPage() {
@@ -197,6 +208,16 @@ function EmployeeDashboardPage() {
 
   const [workStarted, setWorkStarted] = useState(false);
   const [handoverNote, setHandoverNote] = useState("");
+  const [handovers, setHandovers] = useState([]);
+
+  useEffect(() => {
+    setHandovers(getHandovers());
+    const unsubscribe = subscribeHandovers(setHandovers);
+    return unsubscribe;
+  }, []);
+
+  // 같은 라인에 남겨진 인계 기록만 보여줍니다 (다른 라인 사원과 섞이지 않도록)
+  const lineHandovers = handovers.filter((h) => h.line === worker.line);
 
   const handleStartWork = () => {
     setWorkStarted(true);
@@ -208,8 +229,7 @@ function EmployeeDashboardPage() {
       alert("인계할 특이사항을 입력해주세요.");
       return;
     }
-    // TODO: 백엔드 API 연동 (교대 인수인계 저장)
-    console.log("교대 인수인계 저장:", { line: worker.line, note: handoverNote });
+    saveHandover({ line: worker.line, writer: worker.nameKo, note: handoverNote });
     alert("다음 근무자에게 인계 사항이 저장되었습니다.");
     setHandoverNote("");
   };
@@ -330,6 +350,23 @@ function EmployeeDashboardPage() {
             <button className="btn-primary" style={{ width: "100%" }} onClick={handleSaveHandover}>
               인계 사항 저장
             </button>
+
+            <div className="handover-history">
+              <div className="handover-history-title">이전 근무자의 인계 기록</div>
+              {lineHandovers.length === 0 ? (
+                <div className="handover-empty">아직 남겨진 인계 사항이 없습니다.</div>
+              ) : (
+                lineHandovers.slice(0, 5).map((h) => (
+                  <div key={h.id} className="handover-item">
+                    <div className="handover-item-top">
+                      <span className="handover-writer">{h.writer}</span>
+                      <span className="handover-time">{h.time}</span>
+                    </div>
+                    <div className="handover-note">{h.note}</div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </div>
