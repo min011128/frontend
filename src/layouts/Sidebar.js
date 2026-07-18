@@ -46,6 +46,12 @@ function Sidebar() {
           <span className="material-symbols-outlined">precision_manufacturing</span>
           <span>생산 모니터링</span>
         </Link>
+
+        {/* 💡 품질 검사 입력 (관리자/사원 공통) */}
+        <Link to="/quality-inspection" className={`nav-item ${location.pathname === "/quality-inspection" ? "active" : ""}`}>
+          <span className="material-symbols-outlined">fact_check</span>
+          <span>품질 검사</span>
+        </Link>
         
         <Link to="/quality" className={`nav-item ${location.pathname === "/quality" ? "active" : ""}`}>
           <span className="material-symbols-outlined">verified_user</span>

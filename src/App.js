@@ -6,6 +6,7 @@ import ProductionPage from "./pages/ProductionPage"; // 1. 정상적으로 교�
 import MaterialPage from "./pages/MaterialPage";
 import LoginPage from "./pages/LoginPage";
 import QualityPage from "./pages/QualityPage";
+import QualityInspectionPage from "./pages/QualityInspectionPage";
 import AdminEmployeePage from "./pages/AdminEmployeePage";
 import AdminNoticeEditor from "./pages/AdminNoticeEditor";
 import NoticeBoardPage from "./pages/NoticeBoardPage";
@@ -94,6 +95,9 @@ function App() {
           />
 
           <Route path="/quality" element={<QualityPage />} />
+
+          {/* 💡 품질 검사 입력 (관리자/사원 공통) */}
+          <Route path="/quality-inspection" element={<QualityInspectionPage />} />
           
           {/* 💡 마이페이지: 관리자/사원 역할에 따라 다른 컴포넌트 렌더링 */}
           <Route

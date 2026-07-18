@@ -63,6 +63,11 @@ function QualityPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 5;
 
+  // ---- 관리자 인증 상태: 실제 로그인 권한(localStorage)과 연동 ----
+  // 리포트 내보내기처럼 데이터를 추출하는 기능만 관리자 전용으로 제한하고,
+  // 수율/불량 조회 등 나머지 화면은 사원도 그대로 볼 수 있습니다.
+  const isAdmin = localStorage.getItem("userRole") === "admin";
+
   const filteredResults = allInspectionResults
     .filter((row) => row.id.toLowerCase().includes(searchSerial.toLowerCase()))
     .filter((row) => {
@@ -204,6 +209,8 @@ function QualityPage() {
     .mesdash .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .mesdash .page-btn:disabled:hover { background-color: #ffffff; }
     .mesdash .page-info { font-family: "JetBrains Mono", monospace; }
+
+    .mesdash .readonly-tag { font-size: 11px; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 6px 10px; border-radius: 8px; }
   `;
 
   return (
@@ -217,10 +224,14 @@ function QualityPage() {
           <p>B-02 라인의 실시간 검사 분석 및 불량 추적 데이터입니다.</p>
         </div>
         <div className="btn-group">
-          <button type="button" className="btn-primary-filled">
-            <span className="material-symbols-outlined">download</span>리포트
-            내보내기
-          </button>
+          {isAdmin ? (
+            <button type="button" className="btn-primary-filled">
+              <span className="material-symbols-outlined">download</span>리포트
+              내보내기
+            </button>
+          ) : (
+            <span className="readonly-tag">조회 전용</span>
+          )}
         </div>
       </div>
 
