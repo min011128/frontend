@@ -16,6 +16,26 @@ function Sidebar() {
   const [equipmentOpen, setEquipmentOpen] = useState(isEquipmentPath);
 
   const sidebarSubStyles = `
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    .sidebar-nav {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+    }
+    .sidebar-nav::-webkit-scrollbar {
+      width: 5px;
+    }
+    .sidebar-nav::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    .sidebar-footer {
+      flex-shrink: 0;
+    }
     .nav-group-btn {
       display: flex;
       align-items: center;
