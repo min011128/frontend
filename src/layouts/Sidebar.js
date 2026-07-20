@@ -25,13 +25,11 @@ function Sidebar() {
       flex: 1 1 auto;
       min-height: 0;
       overflow-y: auto;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
     }
     .sidebar-nav::-webkit-scrollbar {
-      width: 5px;
-    }
-    .sidebar-nav::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 3px;
+      display: none; /* Chrome, Safari */
     }
     .sidebar-footer {
       flex-shrink: 0;
