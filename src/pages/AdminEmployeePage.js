@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import MesApi from "../api/MesApi";
 
 // -------------------------------------------------------------
 // [데이터 정의]
@@ -19,6 +20,17 @@ const initialEmployees = [
 const STATUS_CLASS = { "재직중": "status-active", "휴직": "status-leave", "퇴직": "status-retired" };
 
 const emptyForm = { id: "", name: "", email: "", dept: DEPT_OPTIONS[0], phone: "", status: "재직중", line: LINE_OPTIONS[0], role: "user" };
+
+// 임시 비밀번호 생성 (Mock)
+// 실제로는 서버가 생성해서 응답으로 내려줘야 합니다 (클라이언트에서 만든 값을 신뢰하면 안 됨).
+function generateTempPassword() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+  let result = "";
+  for (let i = 0; i < 10; i += 1) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return result;
+}
 
 // -------------------------------------------------------------
 // [CSS 스타일 정의] - 프로젝트 공통 톤(#0566d9 포인트 컬러)에 맞춤
@@ -65,6 +77,8 @@ const styles = `
   .btn-icon-action:hover { background: #f1f5f9; }
   .btn-icon-action.danger { color: #dc2626; border-color: #fecaca; }
   .btn-icon-action.danger:hover { background: #fee2e2; }
+  .btn-icon-action.key { color: #a16207; border-color: #fde68a; }
+  .btn-icon-action.key:hover { background: #fef9c3; }
 
   .empty-row td { text-align: center; padding: 40px; color: #94a3b8; font-size: 13px; }
 
@@ -82,6 +96,18 @@ const styles = `
 
   .submit-btn { width: 100%; padding: 12px; background: #0566d9; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 13px; margin-top: 6px; }
   .submit-btn:hover { opacity: 0.85; }
+
+  /* 임시 비밀번호 발급 모달 */
+  .temp-pw-target { font-size: 13px; color: #64748b; margin-bottom: 16px; }
+  .temp-pw-target b { color: #0f172a; }
+  .temp-pw-box { display: flex; align-items: center; gap: 8px; background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
+  .temp-pw-value { flex: 1; font-family: "JetBrains Mono", monospace; font-size: 18px; font-weight: 800; color: #0f172a; letter-spacing: 0.03em; }
+  .btn-copy { background: #0566d9; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  .btn-copy:hover { opacity: 0.85; }
+  .btn-copy.copied { background: #16803d; }
+
+  .temp-pw-warning { display: flex; gap: 8px; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 12px 14px; font-size: 12px; color: #9a3412; line-height: 1.5; margin-bottom: 6px; }
+  .temp-pw-warning .icon { flex-shrink: 0; }
 `;
 
 function AdminEmployeePage() {
@@ -91,6 +117,11 @@ function AdminEmployeePage() {
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState("add");
   const [form, setForm] = useState(emptyForm);
+
+  // ---- 임시 비밀번호 발급 모달 상태 ----
+  // 발급된 비밀번호는 컴포넌트 상태에만 잠깐 담아두고, 모달을 닫으면 화면 어디에도 남지 않습니다.
+  const [tempPasswordInfo, setTempPasswordInfo] = useState(null); // { empId, name, password }
+  const [isCopied, setIsCopied] = useState(false);
 
   const filteredEmployees = employees.filter((emp) => {
     const term = searchTerm.trim().toLowerCase();
@@ -186,6 +217,44 @@ function AdminEmployeePage() {
     }
   };
 
+  // ---- 임시 비밀번호 발급 ----
+  const handleIssueTempPassword = async (emp) => {
+    if (!window.confirm(`${emp.name}(${emp.id}) 사원에게 임시 비밀번호를 발급하시겠습니까?\n발급 시 해당 사원의 기존 로그인 세션은 모두 종료됩니다.`)) {
+      return;
+    }
+
+    try {
+      // TODO: 백엔드 연동 시 아래 mock 대신 이 호출을 그대로 사용하세요.
+      // const res = await MesApi.issueTempPassword(emp.id);
+      // const tempPassword = res.data.tempPassword;
+      const tempPassword = generateTempPassword();
+
+      // 서버는 임시 비밀번호 발급 시 해당 사원의 세션 버전을 올려
+      // 기존에 로그인되어 있던 모든 기기를 로그아웃 처리해야 합니다.
+      setTempPasswordInfo({ empId: emp.id, name: emp.name, password: tempPassword });
+      setIsCopied(false);
+    } catch (err) {
+      alert("임시 비밀번호 발급에 실패했습니다.");
+    }
+  };
+
+  const handleCopyTempPassword = async () => {
+    if (!tempPasswordInfo) return;
+    try {
+      await navigator.clipboard.writeText(tempPasswordInfo.password);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 1500);
+    } catch {
+      alert("클립보드 복사에 실패했습니다. 직접 선택해서 복사해주세요.");
+    }
+  };
+
+  const closeTempPasswordModal = () => {
+    // 모달을 닫으면 발급된 비밀번호 값은 상태에서 완전히 제거됩니다 (다시 볼 수 없음).
+    setTempPasswordInfo(null);
+    setIsCopied(false);
+  };
+
   return (
     <div className="admin-container">
       <style>{styles}</style>
@@ -261,6 +330,13 @@ function AdminEmployeePage() {
                 <td>{emp.line}</td>
                 <td style={{ textAlign: "center" }}>
                   <div className="row-actions">
+                    <button
+                      className="btn-icon-action key"
+                      title="임시 비밀번호 발급"
+                      onClick={() => handleIssueTempPassword(emp)}
+                    >
+                      🔑
+                    </button>
                     <button
                       className="btn-icon-action"
                       title="수정"
@@ -363,6 +439,44 @@ function AdminEmployeePage() {
                 {modalMode === "add" ? "새 계정 발급하기" : "변경사항 저장"}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* 임시 비밀번호 발급 결과 모달 (1회성 표시) */}
+      {tempPasswordInfo && (
+        <div className="modal-overlay" onClick={closeTempPasswordModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>🔑 임시 비밀번호 발급 완료</h3>
+              <button className="btn-close" onClick={closeTempPasswordModal}>✕</button>
+            </div>
+
+            <div className="temp-pw-target">
+              <b>{tempPasswordInfo.name}</b> (#{tempPasswordInfo.empId}) 사원의 임시 비밀번호가
+              발급되었습니다.
+            </div>
+
+            <div className="temp-pw-box">
+              <span className="temp-pw-value">{tempPasswordInfo.password}</span>
+              <button
+                type="button"
+                className={`btn-copy ${isCopied ? "copied" : ""}`}
+                onClick={handleCopyTempPassword}
+              >
+                {isCopied ? "복사됨 ✓" : "복사"}
+              </button>
+            </div>
+
+            <div className="temp-pw-warning">
+              <span className="icon">⚠️</span>
+              <span>
+                이 비밀번호는 <b>지금 한 번만</b> 표시되며 다시 확인할 수 없습니다. 사원에게 직접
+                전달해주세요. 사원은 로그인 후 원할 때 <b>마이페이지에서 자유롭게 변경</b>할 수
+                있으며, 반드시 즉시 변경해야 하는 것은 아닙니다. 발급과 동시에 해당 사원의 기존
+                로그인 세션은 모두 종료됩니다.
+              </span>
+            </div>
           </div>
         </div>
       )}
